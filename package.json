@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "egg": "^2",
+    "egg-cors": "^2.2.3",
+    "egg-onerror": "^2.1.1",
     "egg-scripts": "^2",
     "egg-sequelize": "^6.0.0",
     "mysql2": "^2.3.3"
@@ -19,7 +21,9 @@
     "egg-ci": "^2",
     "egg-mock": "^4",
     "eslint": "^8",
-    "eslint-config-egg": "^12"
+    "eslint-config-egg": "^12",
+    "sequelize-auto": "^0.8.8",
+    "sequelize-cli": "^6.4.1"
   },
   "engines": {
     "node": ">=16.0.0"
