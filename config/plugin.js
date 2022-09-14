@@ -18,4 +18,12 @@ module.exports = {
     enable: true,
     package: 'egg-cors',
   },
+  redis: {
+    enable: true,
+    package: 'egg-redis',
+  },
+  sessionRedis: {
+    enable: true,
+    package: 'egg-session-redis',
+  },
 };

@@ -16,7 +16,14 @@ module.exports = (appInfo) => {
   config.keys = appInfo.name + '_zj-egg-admin';
 
   // add your middleware config here
-  config.middleware = [];
+  config.middleware = ['checkLogin'];
+
+  config.checkLogin = {
+    ignore: [
+      '/api/user/login',
+      '/api/user/register',
+    ]
+  }
 
   // add your user config here
   const userConfig = {
@@ -26,15 +33,23 @@ module.exports = (appInfo) => {
       host: '127.0.0.1',
       port: 3306,
       database: 'admin',
-      username: 'root',
+      name: 'root',
       password: '123456',
     },
     security: {
-      domainWhiteList: ['*'],
+      domainWhiteList: ['http://localhost:3000'],
       csrf: false,
     },
     cors: {
       credentials: true,
+    },
+    redis: {
+      client: {
+        port: 6379, // Redis port
+        host: '127.0.0.1', // Redis host
+        db: 0,
+        password: '123456',
+      },
     },
   };
 

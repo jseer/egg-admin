@@ -9,7 +9,7 @@ class UserService extends Service {
   async login(user) {
     const result = await this.ctx.model.User.findOne({
       where: {
-        username: user.username,
+        name: user.name,
         password: user.password,
       },
       attributes: {
@@ -20,16 +20,45 @@ class UserService extends Service {
   }
 
   async update(user) {
-    const { password, id, ...data } = user;
-    const rows = await this.ctx.model.User.update(data, {
-      where: {
-        id,
-      },
-    });
-    return rows;
+    const { password, id, roles, ...data } = user;
+    await this.ctx.model.transaction(async (t) => {
+      let where = null;
+      if(roles) {
+        where = {
+          code: {
+            [Op.in]: roles,
+          }
+        }
+      }
+      const roleList = await this.ctx.model.Role.findAll({
+        where,
+      })
+      await this.ctx.model.User.update(data, {
+        where: {
+          id,
+        },
+      }, { transaction: t});
+      const user = await this.ctx.model.User.findOne({
+        where: {
+          id,
+        },
+      });
+
+      await user.setRoles(roleList, { transaction: t});
+    })
   }
   async page(data) {
-    const { pageSize, current, ...whereData } = data;
+    const { pageSize, current, roles, ...whereData } = data;
+    const roleList = roles?.split(',');
+    let includeWhere = null;
+    if (roles) {
+      includeWhere = {
+        code: {
+          [Op.in]: roleList,
+        },
+      };
+    }
+
     const { count, rows } = await this.ctx.model.User.findAndCountAll({
       where: whereData,
       limit: Number(pageSize),
@@ -37,10 +66,19 @@ class UserService extends Service {
       attributes: {
         exclude: ['password'],
       },
+      include: {
+        model: this.ctx.model.Role,
+        where: includeWhere,
+        through: {
+          attributes: []
+        },
+      },
     });
     return {
       total: count,
       list: rows,
+      pageSize,
+      current,
     };
   }
 
@@ -49,7 +87,16 @@ class UserService extends Service {
       where: {
         id: {
           [Op.in]: ids,
-        }
+        },
+      },
+    });
+    return rows;
+  }
+
+  async findById(id) {
+    const rows = await this.ctx.model.User.findByPk(id, {
+      attributes: {
+        exclude: ['password'],
       },
     });
     return rows;

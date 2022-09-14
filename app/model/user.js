@@ -11,13 +11,15 @@ module.exports = (app) => {
         allowNull: false,
         primaryKey: true,
       },
-      username: {
+      name: {
         type: STRING(20),
         allowNull: false,
+        unique: true,
       },
       email: {
         type: STRING(255),
         allowNull: false,
+        unique: true,
       },
       password: {
         type: STRING(20),
@@ -41,6 +43,16 @@ module.exports = (app) => {
       ],
     }
   );
+
+  User.associate = function() {
+    app.model.User.belongsToMany(app.model.Role, { 
+      through: {
+        model: app.model.UserRole,
+        foreignKey: 'role_id',
+        otherKey: 'user_Id',
+      },
+    });
+  };
 
   return User;
 };
