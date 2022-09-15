@@ -16,7 +16,7 @@ module.exports = (appInfo) => {
   config.keys = appInfo.name + '_zj-egg-admin';
 
   // add your middleware config here
-  config.middleware = ['checkLogin'];
+  config.middleware = ['handleError', 'checkLogin'];
 
   config.checkLogin = {
     ignore: [

@@ -13,7 +13,8 @@ class UserController extends Controller {
     const { ctx } = this;
     const data = await ctx.service.user.login(ctx.request.body);
     if (data) {
-      ctx.session.user = { id: data.id };
+      ctx.session.user = data;
+      ctx.session.roles = data.roles.map(role => role.code);
       ctx.success(data);
     } else {
       ctx.fail('用户名或者密码不正确');
@@ -46,12 +47,12 @@ class UserController extends Controller {
 
   async getCurrent() {
     const { ctx } = this;
-    const { id } = ctx.session.user;
-    const userInfo = await ctx.service.user.findById(id);
-    if (userInfo) {
-      ctx.success(userInfo);
+    // const { id } = ctx.session.user;
+    // const userInfo = await ctx.service.user.findById(id);
+    if (ctx.session.user) {
+      ctx.success(ctx.session.user);
     } else {
-      ctx.fail(401, '用户不存在');
+      ctx.fail(401, '未登录');
     }
   }
 }

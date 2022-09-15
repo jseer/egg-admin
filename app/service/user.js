@@ -15,6 +15,10 @@ class UserService extends Service {
       attributes: {
         exclude: ['password'],
       },
+      include: {
+        model: this.app.model.Role,
+        through: { attributes: [] },
+      },
     });
     return result;
   }
@@ -23,29 +27,35 @@ class UserService extends Service {
     const { password, id, roles, ...data } = user;
     await this.ctx.model.transaction(async (t) => {
       let where = null;
-      if(roles) {
+      if (roles) {
         where = {
           code: {
             [Op.in]: roles,
-          }
-        }
+          },
+        };
       }
       const roleList = await this.ctx.model.Role.findAll({
         where,
-      })
-      await this.ctx.model.User.update(data, {
-        where: {
-          id,
+      });
+      await this.ctx.model.User.update(
+        data,
+        {
+          where: {
+            id,
+          },
         },
-      }, { transaction: t});
+        { transaction: t }
+      );
       const user = await this.ctx.model.User.findOne({
         where: {
           id,
         },
       });
 
-      await user.setRoles(roleList, { transaction: t});
-    })
+      await user.setRoles(roleList, { transaction: t });
+      this.ctx.session.user = user;
+      this.ctx.session.roles = roleList.map(role => role.code);
+    });
   }
   async page(data) {
     const { pageSize, current, roles, ...whereData } = data;
@@ -70,7 +80,7 @@ class UserService extends Service {
         model: this.ctx.model.Role,
         where: includeWhere,
         through: {
-          attributes: []
+          attributes: [],
         },
       },
     });

@@ -1,14 +1,14 @@
 const Service = require('egg').Service;
 const { Op } = require('sequelize');
-
+const { pullAll } = require('lodash');
 class UserService extends Service {
-  async create(user) {
-    const result = await this.ctx.model.Role.create(user);
+  async create(role) {
+    const result = await this.ctx.model.Role.create(role);
     return result;
   }
 
-  async update(user) {
-    const { id, ...data } = user;
+  async update(role) {
+    const { id, ...data } = role;
     const rows = await this.ctx.model.Role.update(data, {
       where: {
         id,
@@ -39,20 +39,43 @@ class UserService extends Service {
   }
 
   async removeByIds(ids) {
-    const rows = await this.ctx.model.Role.destroy({
-      where: {
-        id: {
-          [Op.in]: ids,
+    const { ctx } = this;
+    await ctx.model.transaction(async (t) => {
+      const roles = await ctx.model.Role.findAll({
+        where: {
+          id: {
+            [Op.in]: ids,
+          },
         },
-      },
-    });
-    return rows;
-  }
+      });
+      await ctx.model.Role.destroy(
+        {
+          where: {
+            id: {
+              [Op.in]: ids,
+            },
+          },
+        },
+        { transaction: t }
+      );
 
-  async findById(id) {
-    const rows = await this.ctx.model.Role.findByPk(id, {
+      await ctx.model.UserRole.destroy(
+        {
+          where: {
+            roleId: {
+              [Op.in]: ids,
+            },
+          },
+        },
+        { transaction: t }
+      );
+      if (ctx.session.roles) {
+        ctx.session.roles = pullAll(
+          ctx.session.roles,
+          roles.map((role) => role.code)
+        );
+      }
     });
-    return rows;
   }
 }
 

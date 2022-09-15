@@ -18,4 +18,17 @@ module.exports = app => {
   router.post('/api/role/update', controller.role.update);
   router.post('/api/role/removeByIds', controller.role.removeByIds);
   router.get('/api/role/list', controller.role.list);
+
+  router.post('/api/menu/create', controller.menu.create);
+  router.get('/api/menu/list', controller.menu.list);
+  router.post('/api/menu/update', controller.menu.update);
+  router.post('/api/menu/removeByIds', controller.menu.removeByIds);
+
+  router.post('/api/dictionaries/create', controller.dictionaries.create);
+  router.get('/api/dictionaries/page', controller.dictionaries.page);
+  router.post('/api/dictionaries/update', controller.dictionaries.update);
+  router.post('/api/dictionaries/removeByIds', controller.dictionaries.removeByIds);
+  router.post('/api/dictionaries/updateDictionariesItems', controller.dictionaries.updateDictionariesItems);
+  router.get('/api/dictionaries/getDictionariesItemsById', controller.dictionaries.getDictionariesItemsById);
+  router.get('/api/dictionaries/getAllDictionaries', controller.dictionaries.getAllDictionaries);
 };
