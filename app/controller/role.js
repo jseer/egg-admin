@@ -33,6 +33,20 @@ class RoleController extends Controller {
     const result = await ctx.service.role.removeByIds(ids);
     ctx.success(result);
   }
+
+  async distributionUser() {
+    const { ctx } = this;
+    const { roleIds, userIds } = ctx.request.body;
+    const result = await ctx.service.role.distributionUser(roleIds, userIds);
+    ctx.success(result);
+  }
+
+  async distributionResource() {
+    const { ctx } = this;
+    const { id, type, resourceIds } = ctx.request.body;
+    const result = await ctx.service.role.distributionResource(id, type, resourceIds);
+    ctx.success(result);
+  }
 }
 
 module.exports = RoleController;

@@ -23,6 +23,16 @@ module.exports = (app) => {
         allowNull: false,
         field: 'role_id',
       },
+      createTime: {
+        type: STRING(255),
+        field: 'create_time',
+        allowNull: false,
+      },
+      updateTime: {
+        type: STRING(255),
+        field: 'update_time',
+        allowNull: false,
+      }
     },
     {
       tableName: 'user_role',

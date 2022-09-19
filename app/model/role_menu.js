@@ -1,7 +1,7 @@
-module.exports = (app) => {
+module.exports = function (app) {
   const { DataTypes } = app.Sequelize;
-  const Dictionaries = app.model.define(
-    'dictionaries',
+  const RoleMenu = app.model.define(
+    'roleMenu',
     {
       id: {
         autoIncrement: true,
@@ -9,14 +9,15 @@ module.exports = (app) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
-        type: DataTypes.STRING(20),
+      roleId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+        field: 'role_id',
       },
-      code: {
-        type: DataTypes.STRING(20),
+      menuId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        unique: 'code',
+        field: 'menu_id',
       },
       createTime: {
         type: DataTypes.STRING(255),
@@ -27,11 +28,11 @@ module.exports = (app) => {
         type: DataTypes.STRING(255),
         field: 'update_time',
         allowNull: false,
-      }
+      },
     },
     {
       sequelize: app.model,
-      tableName: 'dictionaries',
+      tableName: 'role_menu',
       timestamps: false,
       indexes: [
         {
@@ -40,22 +41,9 @@ module.exports = (app) => {
           using: 'BTREE',
           fields: [{ name: 'id' }],
         },
-        {
-          name: 'code',
-          unique: true,
-          using: 'BTREE',
-          fields: [{ name: 'code' }],
-        },
       ],
     }
   );
 
-  Dictionaries.associate = function () {
-    app.model.Dictionaries.hasMany(app.model.DictionariesItem, {
-      foreignKey: 'dictionariesId',
-      as: 'items',
-    });
-  };
-
-  return Dictionaries;
+  return RoleMenu;
 };

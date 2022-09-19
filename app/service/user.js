@@ -53,8 +53,6 @@ class UserService extends Service {
       });
 
       await user.setRoles(roleList, { transaction: t });
-      this.ctx.session.user = user;
-      this.ctx.session.roles = roleList.map(role => role.code);
     });
   }
   async page(data) {
@@ -92,6 +90,15 @@ class UserService extends Service {
     };
   }
 
+  async list(data) {
+    const rows = await this.ctx.model.User.findAll({
+      attributes: {
+        exclude: ['password']
+      }
+    });
+    return rows;
+  }
+
   async removeByIds(ids) {
     const rows = await this.ctx.model.User.destroy({
       where: {
@@ -108,6 +115,26 @@ class UserService extends Service {
       attributes: {
         exclude: ['password'],
       },
+    });
+    return rows;
+  }
+
+  async getListByRoleId(id) {
+    const { ctx } = this;
+    const rows = await ctx.model.User.findAll({
+      where: {
+        id: {
+          [Op.in]: ctx.model.literal(`(
+            SELECT user_id
+            FROM user_role as userRole
+            WHERE
+            userRole.role_id = ${id}
+        )`),
+        },
+      },
+      attributes: {
+        exclude: ['password']
+      }
     });
     return rows;
   }

@@ -10,10 +10,6 @@ module.exports = {
     enable: true,
     package: 'egg-sequelize',
   },
-  onerror: {
-    enable: true,
-    package: 'egg-onerror',
-  },
   cors: {
     enable: true,
     package: 'egg-cors',

@@ -34,24 +34,24 @@ class DictionariesController extends Controller {
     ctx.success(result);
   }
 
-  async getDictionariesItemsById() {
+  async getDictionariesItemById() {
     const { ctx } = this;
     const { id } = ctx.query;
-    const result = await ctx.service.dictionaries.getDictionariesItemsById(id);
+    const result = await ctx.service.dictionaries.getDictionariesItemById(id);
     ctx.success(result);
   }
 
-  async updateDictionariesItems() {
+  async updateDictionariesItem() {
     const { ctx } = this;
     const { list, id } = ctx.request.body;
-    const result = await ctx.service.dictionaries.updateDictionariesItems(
+    const result = await ctx.service.dictionaries.updateDictionariesItem(
       id,
       list
     );
     if (result) {
       ctx.success(true);
     } else {
-      ctx.fail('更新失败');
+      ctx.throw(500, '更新失败');
     }
   }
 

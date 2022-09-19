@@ -50,7 +50,7 @@ class DictionariesService extends Service {
     return rows;
   }
 
-  async getDictionariesItemsById(id) {
+  async getDictionariesItemById(id) {
     const rows = await this.ctx.model.DictionariesItem.findAll({
       where: {
         dictionaries_id: id,
@@ -62,7 +62,7 @@ class DictionariesService extends Service {
     return rows;
   }
 
-  async updateDictionariesItems(id, list) {
+  async updateDictionariesItem(id, list) {
     const { ctx } = this;
     const dictionary = await ctx.model.Dictionaries.findByPk(id);
     if (dictionary) {

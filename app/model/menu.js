@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (app) => {
-  const { STRING, INTEGER } = app.Sequelize;
+  const { STRING, INTEGER, SMALLINT } = app.Sequelize;
 
   const Menu = app.model.define(
     'menu',
@@ -30,11 +30,36 @@ module.exports = (app) => {
       path: {
         type: STRING(255),
       },
+      sort: {
+        type: SMALLINT,
+      },
+      createTime: {
+        type: STRING(255),
+        field: 'create_time',
+        allowNull: false,
+      },
+      updateTime: {
+        type: STRING(255),
+        field: 'update_time',
+        allowNull: false,
+      }
     },
     {
       tableName: 'menu',
       timestamps: false,
     }
   );
+
+
+  Menu.associate = function() {
+    app.model.Menu.belongsToMany(app.model.Role, { 
+      through: {
+        model: app.model.RoleMenu,
+        foreignKey: 'menu_id',
+        otherKey: 'role_id',
+      },
+    });
+  };
+
   return Menu;
 };

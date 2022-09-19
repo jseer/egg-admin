@@ -18,12 +18,37 @@ class MenuService extends Service {
   }
   async list(data) {
     const { ctx } = this;
+    const where = data;
+    if (where.code) {
+      where.code = {
+        [Op.like]: `%${where.code}%`,
+      }
+    }
+    if (where.name) {
+      where.name = {
+        [Op.like]: `%${where.name}%`,
+      }
+    }
     const rows = await ctx.model.Menu.findAll({
-      where: data,
+      where,
       raw: true,
     });
-    const result = ctx.helper.loopMenu(rows);
+    const result = ctx.helper.loopMenus(rows);
     return result;
+  }
+
+  async listByRoleId(roleId) {
+    const { ctx } = this;
+    const rows = await ctx.model.Menu.findAll({
+      where: {
+        id: {
+          [Op.in]: ctx.model.literal(`
+            (SELECT menu_id FROM role_menu WHERE role_id=${roleId})
+          `),
+        },
+      },
+    });
+    return rows;
   }
 
   async removeByIds(ids) {

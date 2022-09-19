@@ -1,7 +1,7 @@
-module.exports = (app) => {
+module.exports = function (app) {
   const { DataTypes } = app.Sequelize;
-  const Dictionaries = app.model.define(
-    'dictionaries',
+  const ApiItem = app.model.define(
+    'apiItem',
     {
       id: {
         autoIncrement: true,
@@ -14,24 +14,37 @@ module.exports = (app) => {
         allowNull: false,
       },
       code: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(255),
         allowNull: false,
         unique: 'code',
       },
+      path: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      parentId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'parent_id',
+      },
+      type: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
       createTime: {
         type: DataTypes.STRING(255),
-        field: 'create_time',
         allowNull: false,
+        field: 'create_time'
       },
       updateTime: {
         type: DataTypes.STRING(255),
-        field: 'update_time',
         allowNull: false,
-      }
+        field: 'update_time'
+      },
     },
     {
       sequelize: app.model,
-      tableName: 'dictionaries',
+      tableName: 'api_items',
       timestamps: false,
       indexes: [
         {
@@ -50,12 +63,15 @@ module.exports = (app) => {
     }
   );
 
-  Dictionaries.associate = function () {
-    app.model.Dictionaries.hasMany(app.model.DictionariesItem, {
-      foreignKey: 'dictionariesId',
-      as: 'items',
+  ApiItem.associate = function() {
+    app.model.ApiItem.belongsToMany(app.model.Role, { 
+      through: {
+        model: app.model.RoleApiItem,
+        foreignKey: 'api_item_id',
+        otherKey: 'role_id',
+      },
     });
   };
 
-  return Dictionaries;
+  return ApiItem;
 };

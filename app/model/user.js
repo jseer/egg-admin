@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (app) => {
-  const { STRING, INTEGER, TINYINT } = app.Sequelize;
+  const { STRING, INTEGER, CHAR } = app.Sequelize;
 
   const User = app.model.define(
     'user',
@@ -26,9 +26,19 @@ module.exports = (app) => {
         allowNull: false,
       },
       gender: {
-        type: TINYINT,
+        type: INTEGER,
         allowNull: false,
       },
+      createTime: {
+        type: STRING(255),
+        field: 'create_time',
+        allowNull: false,
+      },
+      updateTime: {
+        type: STRING(255),
+        field: 'update_time',
+        allowNull: false,
+      }
     },
     {
       tableName: 'user',
@@ -48,8 +58,8 @@ module.exports = (app) => {
     app.model.User.belongsToMany(app.model.Role, { 
       through: {
         model: app.model.UserRole,
-        foreignKey: 'role_id',
-        otherKey: 'user_Id',
+        foreignKey: 'user_id',
+        otherKey: 'role_Id',
       },
     });
   };

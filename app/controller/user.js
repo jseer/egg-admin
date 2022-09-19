@@ -1,6 +1,8 @@
 'use strict';
 
 const Controller = require('egg').Controller;
+const { result } = require('lodash');
+const { Op } = require('sequelize');
 
 class UserController extends Controller {
   async create() {
@@ -14,7 +16,6 @@ class UserController extends Controller {
     const data = await ctx.service.user.login(ctx.request.body);
     if (data) {
       ctx.session.user = data;
-      ctx.session.roles = data.roles.map(role => role.code);
       ctx.success(data);
     } else {
       ctx.fail('用户名或者密码不正确');
@@ -38,6 +39,13 @@ class UserController extends Controller {
     ctx.success(data);
   }
 
+  async list() {
+    const { ctx } = this;
+    const data = await ctx.service.user.list(ctx.query);
+    ctx.success(data);
+  }
+
+
   async removeByIds() {
     const { ctx } = this;
     const { ids } = ctx.request.body;
@@ -54,6 +62,13 @@ class UserController extends Controller {
     } else {
       ctx.fail(401, '未登录');
     }
+  }
+
+  async getListByRoleId() {
+    const { ctx } = this;
+    const { id } = ctx.query;
+    const result = await ctx.service.user.getListByRoleId(id);
+    ctx.success(result);
   }
 }
 

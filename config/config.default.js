@@ -1,7 +1,7 @@
 /* eslint valid-jsdoc: "off" */
 
 'use strict';
-
+const dayjs = require('dayjs');
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
@@ -16,14 +16,11 @@ module.exports = (appInfo) => {
   config.keys = appInfo.name + '_zj-egg-admin';
 
   // add your middleware config here
-  config.middleware = ['handleError', 'checkLogin'];
+  config.middleware = ['checkLogin', 'filterData'];
 
   config.checkLogin = {
-    ignore: [
-      '/api/user/login',
-      '/api/user/register',
-    ]
-  }
+    ignore: ['/api/user/login', '/api/user/register'],
+  };
 
   // add your user config here
   const userConfig = {
@@ -35,10 +32,39 @@ module.exports = (appInfo) => {
       database: 'admin',
       name: 'root',
       password: '123456',
+      define: {
+        freezeTableName: false,
+        underscored: true,
+        hooks: {
+          beforeBulkCreate: (record, options) => {
+            options.individualHooks = true;
+          },
+          beforeCreate: (record) => {
+            const date = dayjs().format('YYYY-MM-DD HH:mm:ss');
+            record.dataValues.createTime = date;
+            record.dataValues.updateTime = date;
+          },
+          beforeBulkUpdate: (options) => {
+            options.individualHooks = true;
+          },
+          beforeUpdate: (record) => {
+            record.dataValues.updateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');;
+          },
+          beforeValidate: (record, options) => {
+            options.skip.push('createTime', 'updateTime');
+          },
+          beforeSave: (record, options) => {
+            debugger
+          },
+          beforeUpsert: (values, options) => {
+            debugger
+          }
+        },
+      },
     },
     security: {
       domainWhiteList: ['http://localhost:3000'],
-      csrf: false,
+      csrf: { enable: false },
     },
     cors: {
       credentials: true,

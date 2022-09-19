@@ -77,6 +77,60 @@ class UserService extends Service {
       }
     });
   }
+
+  async distributionUser(roleIds, userIds) {
+    const { ctx } = this;
+    await ctx.model.transaction(async (t) => {
+      const userList = await ctx.model.User.findAll({
+        where: {
+          id: {
+            [Op.in]: userIds,
+          },
+        },
+      });
+      const roleList = await ctx.model.Role.findAll({
+        where: {
+          id: {
+            [Op.in]: roleIds,
+          },
+        },
+      });
+      for (const role of roleList) {
+        await role.setUsers(userList, {
+          transaction: t,
+        });
+      }
+    });
+  }
+
+  async distributionResource(roleId, type, resourceIds) {
+    const { ctx } = this;
+    if (type === 'api') {
+      const [role, apiItems] = await Promise.all([
+        ctx.model.Role.findByPk(roleId),
+        ctx.model.ApiItem.findAll({
+          where: {
+            id: {
+              [Op.in]: resourceIds,
+            }
+          }
+        })
+      ]);
+      await role.setApiItems(apiItems);
+    } else if (type === 'menu') {
+      const [role, menus] = await Promise.all([
+        ctx.model.Role.findByPk(roleId),
+        ctx.model.Menu.findAll({
+          where: {
+            id: {
+              [Op.in]: resourceIds,
+            }
+          }
+        }),
+      ]);
+      await role.setMenus(menus);
+    }
+  }
 }
 
 module.exports = UserService;

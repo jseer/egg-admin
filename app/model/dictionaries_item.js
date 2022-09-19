@@ -1,6 +1,6 @@
 module.exports = (app) => {
   const { DataTypes } = app.Sequelize;
-  const DictionariesItems = app.model.define(
+  const DictionariesItem = app.model.define(
     'dictionariesItem',
     {
       id: {
@@ -21,6 +21,16 @@ module.exports = (app) => {
         allowNull: false,
         field: 'dictionaries_id',
       },
+      createTime: {
+        type: DataTypes.STRING(255),
+        field: 'create_time',
+        allowNull: false,
+      },
+      updateTime: {
+        type: DataTypes.STRING(255),
+        field: 'update_time',
+        allowNull: false,
+      }
     },
     {
       sequelize: app.model,
@@ -42,5 +52,5 @@ module.exports = (app) => {
       ],
     }
   );
-  return DictionariesItems;
+  return DictionariesItem;
 };
