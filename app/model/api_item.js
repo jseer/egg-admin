@@ -31,6 +31,22 @@ module.exports = function (app) {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
+      status: {
+        type: DataTypes.TINYINT,
+      },
+      needLogin: {
+        type: DataTypes.TINYINT,
+        field: 'need_login',
+      },
+      needCheck: {
+        type: DataTypes.TINYINT,
+        field: 'need_check',
+      },
+      method: {
+        type: DataTypes.STRING(255),
+        field: 'method',
+        allowNull: false,
+      },
       createTime: {
         type: DataTypes.STRING(255),
         allowNull: false,
@@ -64,7 +80,7 @@ module.exports = function (app) {
   );
 
   ApiItem.associate = function() {
-    app.model.ApiItem.belongsToMany(app.model.Role, { 
+    ApiItem.belongsToMany(app.model.Role, { 
       through: {
         model: app.model.RoleApiItem,
         foreignKey: 'api_item_id',

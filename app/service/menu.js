@@ -22,19 +22,18 @@ class MenuService extends Service {
     if (where.code) {
       where.code = {
         [Op.like]: `%${where.code}%`,
-      }
+      };
     }
     if (where.name) {
       where.name = {
         [Op.like]: `%${where.name}%`,
-      }
+      };
     }
     const rows = await ctx.model.Menu.findAll({
       where,
       raw: true,
     });
-    const result = ctx.helper.loopMenus(rows);
-    return result;
+    return rows;
   }
 
   async listByRoleId(roleId) {
@@ -60,6 +59,49 @@ class MenuService extends Service {
       },
     });
     return rows;
+  }
+
+  async authListByAccountUserId(userId) {
+    const { ctx } = this;
+    const rows = await ctx.model.Menu.findAll({
+      where: {
+        status: 1,
+        id: {
+          [Op.in]: ctx.model.literal(
+            `(${this.getMenuIdsSqlByRoleIdsSql(
+              ctx.service.role.getRoleIdsSqlByUserId(userId)
+            )})`
+          ),
+        },
+      },
+      raw: true,
+    });
+    return rows;
+  }
+
+  async authListByAccountTourist(ids) {
+    const rows = await this.ctx.model.Menu.destroy({
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+    });
+    return rows;
+  }
+
+  getMenuIdsSqlByRoleIdsSql(roleIdsSql) {
+    const { ctx } = this;
+    return this.ctx.model.dialect.queryGenerator
+      .selectQuery('role_menu', {
+        attributes: ['menu_id'],
+        where: {
+          role_id: {
+            [Op.in]: ctx.model.literal(`(${roleIdsSql})`),
+          },
+        },
+      })
+      .slice(0, -1);
   }
 }
 

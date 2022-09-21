@@ -1,13 +1,18 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const { result } = require('lodash');
-const { Op } = require('sequelize');
+const { USER_TYPE } = require('../utils/common');
 
 class UserController extends Controller {
   async create() {
     const { ctx } = this;
     const data = await ctx.service.user.create(ctx.request.body);
+    ctx.success(data);
+  }
+
+  async register() {
+    const { ctx } = this;
+    const data = await ctx.service.user.register(ctx.request.body);
     ctx.success(data);
   }
 
@@ -23,7 +28,7 @@ class UserController extends Controller {
   }
   async logout() {
     const { ctx } = this;
-    ctx.session.user = null;
+    ctx.session = null;
     ctx.success(true);
   }
 
@@ -35,32 +40,36 @@ class UserController extends Controller {
 
   async page() {
     const { ctx } = this;
-    const data = await ctx.service.user.page(ctx.query);
+    const data = await ctx.service.user.page(ctx.helper.query2where(ctx.query));
     ctx.success(data);
   }
 
   async list() {
     const { ctx } = this;
-    const data = await ctx.service.user.list(ctx.query);
+    const data = await ctx.service.user.list(ctx.helper.query2where(ctx.query));
     ctx.success(data);
   }
-
 
   async removeByIds() {
     const { ctx } = this;
     const { ids } = ctx.request.body;
-    const result = await ctx.service.user.removeByIds(ids);
-    ctx.success(result);
+    await ctx.service.user.removeByIds(ids);
+    ctx.success(true);
   }
 
   async getCurrent() {
     const { ctx } = this;
-    // const { id } = ctx.session.user;
-    // const userInfo = await ctx.service.user.findById(id);
-    if (ctx.session.user) {
-      ctx.success(ctx.session.user);
+    let userInfo = null;
+    if (ctx.session.user.type === USER_TYPE.ACCOUNT) {
+      userInfo = await ctx.service.user.findById(ctx.session.user.id);
+    } else if (ctx.session.user.type === USER_TYPE.TOURIST) {
+      userInfo = await ctx.service.tourist.findById(ctx.session.user.id);
+    }
+    if (userInfo) {
+      ctx.session.user = userInfo;
+      ctx.success(userInfo);
     } else {
-      ctx.fail(401, '未登录');
+      ctx.fail('用户不存在', 401);
     }
   }
 

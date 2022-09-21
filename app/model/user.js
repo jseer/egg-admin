@@ -1,6 +1,7 @@
 'use strict';
+const { USER_TYPE } = require('../utils/common');
 module.exports = (app) => {
-  const { STRING, INTEGER, CHAR } = app.Sequelize;
+  const { STRING, INTEGER, DATE } = app.Sequelize;
 
   const User = app.model.define(
     'user',
@@ -29,6 +30,16 @@ module.exports = (app) => {
         type: INTEGER,
         allowNull: false,
       },
+      type: {
+        type: STRING(255),
+        allowNull: false,
+        defaultValue: USER_TYPE.ACCOUNT,
+      },
+      deleteAt: {
+        type: STRING(255),
+        allowNull: true,
+        field: 'delete_at',
+      },
       createTime: {
         type: STRING(255),
         field: 'create_time',
@@ -38,7 +49,7 @@ module.exports = (app) => {
         type: STRING(255),
         field: 'update_time',
         allowNull: false,
-      }
+      },
     },
     {
       tableName: 'user',

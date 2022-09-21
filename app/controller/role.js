@@ -5,25 +5,27 @@ const Controller = require('egg').Controller;
 class RoleController extends Controller {
   async create() {
     const { ctx } = this;
-    const data = await ctx.service.role.create(ctx.request.body);
-    ctx.success(data);
+    const data = Object.assign(ctx.request.body);
+    const result = await ctx.service.role.create(data);
+    ctx.success(result);
   }
 
   async update() {
     const { ctx } = this;
-    await ctx.service.role.update(ctx.request.body);
+    const data = ctx.request.body;
+    await ctx.service.role.update(data);
     ctx.success(true);
   }
 
   async page() {
     const { ctx } = this;
-    const data = await ctx.service.role.page(ctx.query);
+    const data = await ctx.service.role.page(ctx.helper.query2where(ctx.query));
     ctx.success(data);
   }
 
   async list() {
     const { ctx } = this;
-    const data = await ctx.service.role.list(ctx.query);
+    const data = await ctx.service.role.list(ctx.helper.query2where(ctx.query));
     ctx.success(data);
   }
 

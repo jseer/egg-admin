@@ -1,3 +1,10 @@
+const path = require('path');
+const ipdb = require('ipip-ipdb');
+const { Op } = require('sequelize');
+const ipDatabaseUri = path.resolve(__dirname, '../../assets/ipipfree.ipdb');
+
+const DatabaseClient = new ipdb.City(ipDatabaseUri);
+
 module.exports = {
   loopMenus(menus) {
     const records = {};
@@ -57,5 +64,53 @@ module.exports = {
     list[j] = item;
   },
 
-  
+  isIp(ip) {
+    return /^(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(\.(?!$)|$)){4}$/.test(ip);
+  },
+
+  ip2Locate(ip) {
+    if (this.isIp(ip) === false) {
+      return null;
+    }
+    const res = DatabaseClient.findInfo(ip, 'CN');
+    return {
+      country: res.countryName, //  国家
+      province: res.regionName, //  省
+      city: res.cityName, //  市
+    };
+  },
+
+  query2where(query) {
+    const whereQuery = {};
+    Object.keys(query).forEach((k) => {
+      const value = query[k];
+      if (value == null || value === '') return;
+      const [prefix, key, operation] = k.split('-');
+      if (prefix && key && operation) {
+        switch (operation) {
+          case 'eq':
+            whereQuery[key] = {
+              [Op.eq]: value,
+            };
+            break;
+          case 'like':
+            whereQuery[key] = {
+              [Op.like]: `%${value}%`,
+            };
+            break;
+          case 'in':
+          whereQuery[key] = {
+            [Op.in]: value.split(','),
+          };
+          break;
+          default:
+            whereQuery[key] = value;
+            break;
+        }
+      } else {
+        whereQuery[k] = query[k];
+      }
+    });
+    return whereQuery;
+  },
 };

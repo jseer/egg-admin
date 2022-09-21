@@ -39,5 +39,6 @@ module.exports = (app) => {
       timestamps: false,
     }
   );
+
   return UserRole;
 };

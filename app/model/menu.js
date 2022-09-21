@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (app) => {
-  const { STRING, INTEGER, SMALLINT } = app.Sequelize;
+  const { STRING, INTEGER, TINYINT } = app.Sequelize;
 
   const Menu = app.model.define(
     'menu',
@@ -31,7 +31,11 @@ module.exports = (app) => {
         type: STRING(255),
       },
       sort: {
-        type: SMALLINT,
+        type: TINYINT,
+      },
+      status: {
+        type: TINYINT,
+        allowNull: false,
       },
       createTime: {
         type: STRING(255),

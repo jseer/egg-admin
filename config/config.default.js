@@ -1,7 +1,7 @@
 /* eslint valid-jsdoc: "off" */
 
 'use strict';
-const dayjs = require('dayjs');
+const sequelizeHooks = require('../app/utils/sequelizeHooks');
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
@@ -16,10 +16,10 @@ module.exports = (appInfo) => {
   config.keys = appInfo.name + '_zj-egg-admin';
 
   // add your middleware config here
-  config.middleware = ['checkLogin', 'filterData'];
+  config.middleware = ['checkLogin'];
 
   config.checkLogin = {
-    ignore: ['/api/user/login', '/api/user/register'],
+    ignore: ['/api/user/login', '/api/user/register', '/api/tourist/login'],
   };
 
   // add your user config here
@@ -35,32 +35,28 @@ module.exports = (appInfo) => {
       define: {
         freezeTableName: false,
         underscored: true,
-        hooks: {
-          beforeBulkCreate: (record, options) => {
-            options.individualHooks = true;
-          },
-          beforeCreate: (record) => {
-            const date = dayjs().format('YYYY-MM-DD HH:mm:ss');
-            record.dataValues.createTime = date;
-            record.dataValues.updateTime = date;
-          },
-          beforeBulkUpdate: (options) => {
-            options.individualHooks = true;
-          },
-          beforeUpdate: (record) => {
-            record.dataValues.updateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');;
-          },
-          beforeValidate: (record, options) => {
-            options.skip.push('createTime', 'updateTime');
-          },
-          beforeSave: (record, options) => {
-            debugger
-          },
-          beforeUpsert: (values, options) => {
-            debugger
-          }
+        hooks: sequelizeHooks(appInfo),
+      },
+    },
+    commonConfig: {
+      // superAdmin: 'admin',
+      touristRoles: ['tourist'],
+      accountRoles: ['normal_user'],
+      disabledApiItemsConf: {
+        redisKey: 'disabledApiItems',
+        params: {
+          status: 0,
+          type: '2',
         },
       },
+      needCheckApiItemsConf: {
+        redisKey: 'needCheckApiItems',
+        params: {
+          status: 1,
+          needLogin: 1,
+          needCheck: 1,
+        },
+      }
     },
     security: {
       domainWhiteList: ['http://localhost:3000'],

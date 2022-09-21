@@ -17,13 +17,13 @@ class DictionariesController extends Controller {
 
   async page() {
     const { ctx } = this;
-    const data = await ctx.service.dictionaries.page(ctx.query);
+    const data = await ctx.service.dictionaries.page(ctx.helper.query2where(ctx.query));
     ctx.success(data);
   }
 
   async list() {
     const { ctx } = this;
-    const data = await ctx.service.dictionaries.list(ctx.query);
+    const data = await ctx.service.dictionaries.list(ctx.helper.query2where(ctx.query));
     ctx.success(data);
   }
 

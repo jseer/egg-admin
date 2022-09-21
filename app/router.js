@@ -6,6 +6,7 @@
 module.exports = app => {
   const { router, controller } = app;
   router.post('/api/user/create', controller.user.create);
+  router.post('/api/user/register', controller.user.register);
   router.post('/api/user/login', controller.user.login);
   router.get('/api/user/page', controller.user.page);
   router.get('/api/user/list', controller.user.list);
@@ -28,12 +29,14 @@ module.exports = app => {
   router.post('/api/menu/update', controller.menu.update);
   router.post('/api/menu/removeByIds', controller.menu.removeByIds);
   router.get('/api/menu/listByRoleId', controller.menu.listByRoleId);
+  router.get('/api/menu/authList', controller.menu.authList);
 
   router.post('/api/apiItem/create', controller.apiItem.create);
   router.get('/api/apiItem/list', controller.apiItem.list);
   router.post('/api/apiItem/update', controller.apiItem.update);
   router.post('/api/apiItem/removeByIds', controller.apiItem.removeByIds);
   router.get('/api/apiItem/listByRoleId', controller.apiItem.listByRoleId);
+  router.get('/api/apiItem/getDistributableList', controller.apiItem.getDistributableList);
 
   router.post('/api/dictionaries/create', controller.dictionaries.create);
   router.get('/api/dictionaries/page', controller.dictionaries.page);
@@ -42,4 +45,7 @@ module.exports = app => {
   router.post('/api/dictionaries/updateDictionariesItems', controller.dictionaries.updateDictionariesItem);
   router.get('/api/dictionaries/getDictionariesItemsById', controller.dictionaries.getDictionariesItemById);
   router.get('/api/dictionaries/getAllDictionaries', controller.dictionaries.getAllDictionaries);
+
+  router.post('/api/tourist/login', controller.tourist.login);
+  router.get('/api/tourist/page', controller.tourist.page);
 };

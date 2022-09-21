@@ -28,8 +28,8 @@ class ApiItemService extends Service {
       where,
       raw: true,
     });
-    const result = ctx.helper.loopApiItems(rows);
-    return result;
+
+    return rows;
   }
 
   async removeByIds(ids) {
@@ -53,6 +53,94 @@ class ApiItemService extends Service {
           `),
         },
       },
+    });
+    return rows;
+  }
+
+  getApiItemIdsSql(roleIdsSql) {
+    const { ctx } = this;
+    return ctx.model.dialect.queryGenerator.selectQuery(
+      'role_api_item',
+      {
+        attributes: ['api_item_id'],
+        where: {
+          role_id: {
+            [Op.in]: ctx.model.literal(`(${roleIdsSql})`),
+          },
+        },
+      },
+      ctx.model.RoleApiItem
+    ).slice(0, -1);
+  }
+
+  async getApiItemsByUserId(id, where) {
+    const { ctx } = this;
+    const roleIdsSql = ctx.service.role.getRoleIdsSqlByUserId(id);
+    const apiItemIdsSql = this.getApiItemIdsSql(roleIdsSql);
+    const rows = await ctx.model.ApiItem.findAll({
+      attributes: ['path', 'method'],
+      where: {
+        id: {
+          [Op.in]: ctx.model.literal(`(${apiItemIdsSql})`),
+        },
+        ...where,
+      },
+    });
+    return rows;
+  }
+
+  async getApiItemsByRoleList(roleList, where) {
+    const { ctx } = this;
+    const roleSql = ctx.model.dialect.queryGenerator.selectQuery(
+      'role',
+      {
+        attributes: ['id'],
+        where: {
+          code: {
+            [Op.in]: roleList,
+          },
+          status: 1,
+        },
+      },
+      ctx.model.Role
+    );
+    const apiItemIdsSql = this.getApiItemIdsSql(roleSql.slice(0, -1));
+    const rows = await ctx.model.ApiItem.findAll({
+      attributes: ['path', 'method'],
+      where: {
+        id: {
+          [Op.in]: ctx.model.literal(`(${apiItemIdsSql.slice(0, -1)})`),
+        },
+        ...where,
+      },
+    });
+    return rows;
+  }
+
+  async getApiItemsForCheck(where) {
+    const { ctx } = this;
+    const rows = await ctx.model.ApiItem.findAll({
+      attributes: ['path', 'method'],
+      where,
+    });
+    return rows;
+  }
+
+  async getDistributableList() {
+    const { ctx } = this;
+    const rows = await ctx.model.ApiItem.findAll({
+      where: {
+        [Op.or]: [
+          {
+            needLogin: 1,
+            needCheck: 1,
+          },
+          {
+            type: '1',
+          }
+        ]
+      },
+      raw: true,
     });
     return rows;
   }

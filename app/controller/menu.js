@@ -1,5 +1,7 @@
 'use strict';
 
+const { USER_TYPE } = require('../utils/common');
+
 const Controller = require('egg').Controller;
 
 class MenuController extends Controller {
@@ -17,8 +19,9 @@ class MenuController extends Controller {
 
   async list() {
     const { ctx } = this;
-    const data = await ctx.service.menu.list(ctx.query);
-    ctx.success(data);
+    const data = await ctx.service.menu.list(ctx.helper.query2where(ctx.query));
+    const result = ctx.helper.loopMenus(data);
+    ctx.success(result);
   }
 
   async removeByIds() {
@@ -32,6 +35,18 @@ class MenuController extends Controller {
     const { ctx } = this;
     const data = await ctx.service.menu.listByRoleId(ctx.query.id);
     ctx.success(data);
+  }
+
+  async authList() {
+    const { ctx } = this;
+    const user = ctx.session.user;
+    let menuList = [];
+    if (user.type === USER_TYPE.ACCOUNT) {
+      menuList = await ctx.service.menu.authListByAccountUserId(user.id);
+    } else if (user.type === USER_TYPE.TOURIST) {
+
+    }
+    ctx.success(ctx.helper.loopMenus(menuList));
   }
 }
 

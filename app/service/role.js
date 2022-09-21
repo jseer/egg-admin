@@ -17,8 +17,9 @@ class UserService extends Service {
     return rows;
   }
   async page(data) {
+    const { ctx } = this;
     const { pageSize, current, ...whereData } = data;
-    const { count, rows } = await this.ctx.model.Role.findAndCountAll({
+    const { count, rows } = await ctx.model.Role.findAndCountAll({
       where: whereData,
       limit: Number(pageSize),
       offset: Number(pageSize * (current - 1)),
@@ -32,7 +33,8 @@ class UserService extends Service {
   }
 
   async list(data) {
-    const rows = await this.ctx.model.Role.findAll({
+    const { ctx } = this;
+    const rows = await ctx.model.Role.findAll({
       where: data,
     });
     return rows;
@@ -112,9 +114,9 @@ class UserService extends Service {
           where: {
             id: {
               [Op.in]: resourceIds,
-            }
-          }
-        })
+            },
+          },
+        }),
       ]);
       await role.setApiItems(apiItems);
     } else if (type === 'menu') {
@@ -124,12 +126,33 @@ class UserService extends Service {
           where: {
             id: {
               [Op.in]: resourceIds,
-            }
-          }
+            },
+          },
         }),
       ]);
       await role.setMenus(menus);
     }
+  }
+
+  getRoleIdsSqlByUserId(userId, status = 1) {
+    const { ctx } = this;
+    return ctx.model.dialect.queryGenerator
+      .selectQuery(
+        'role',
+        {
+          attributes: ['id'],
+          where: {
+            id: {
+              [Op.in]: ctx.model.literal(`(
+              SELECT role_id FROM user_role WHERE user_id=${userId}
+            )`),
+            },
+            status,
+          },
+        },
+        ctx.model.Role
+      )
+      .slice(0, -1);
   }
 }
 

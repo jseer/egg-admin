@@ -1,11 +1,38 @@
 const Service = require('egg').Service;
 const { Op } = require('sequelize');
-
+const dayjs = require('dayjs');
 class UserService extends Service {
   async create(user) {
     const result = await this.ctx.model.User.create(user);
     return result;
   }
+
+  async register(user) {
+    const { ctx } = this;
+    const result = await ctx.model.transaction(async (t) => {
+      const result = await ctx.model.User.create(user, {
+        transaction: t,
+      });
+      const {
+        commonConfig: { accountRoles },
+      } = this.ctx.app.config;
+      const roles = await ctx.model.Role.findAll({
+        attributes: ['id'],
+        where: {
+          code: {
+            [Op.in]: accountRoles,
+          },
+        },
+        raw: true,
+      });
+      const records = roles.map((role) => ({userId: result.id, roleId: role.id}));
+      await ctx.model.UserRole.bulkCreate(records, {
+        transaction: t,
+      })
+    });
+    return result;
+  }
+
   async login(user) {
     const result = await this.ctx.model.User.findOne({
       where: {
@@ -15,57 +42,20 @@ class UserService extends Service {
       attributes: {
         exclude: ['password'],
       },
-      include: {
-        model: this.app.model.Role,
-        through: { attributes: [] },
-      },
     });
     return result;
   }
 
   async update(user) {
-    const { password, id, roles, ...data } = user;
-    await this.ctx.model.transaction(async (t) => {
-      let where = null;
-      if (roles) {
-        where = {
-          code: {
-            [Op.in]: roles,
-          },
-        };
-      }
-      const roleList = await this.ctx.model.Role.findAll({
-        where,
-      });
-      await this.ctx.model.User.update(
-        data,
-        {
-          where: {
-            id,
-          },
-        },
-        { transaction: t }
-      );
-      const user = await this.ctx.model.User.findOne({
-        where: {
-          id,
-        },
-      });
-
-      await user.setRoles(roleList, { transaction: t });
+    const { password, deleteAt, id, ...data } = user;
+    await this.ctx.model.User.update(data, {
+      where: {
+        id,
+      },
     });
   }
   async page(data) {
     const { pageSize, current, roles, ...whereData } = data;
-    const roleList = roles?.split(',');
-    let includeWhere = null;
-    if (roles) {
-      includeWhere = {
-        code: {
-          [Op.in]: roleList,
-        },
-      };
-    }
 
     const { count, rows } = await this.ctx.model.User.findAndCountAll({
       where: whereData,
@@ -76,7 +66,11 @@ class UserService extends Service {
       },
       include: {
         model: this.ctx.model.Role,
-        where: includeWhere,
+        where: roles
+          ? {
+              roles,
+            }
+          : undefined,
         through: {
           attributes: [],
         },
@@ -93,21 +87,33 @@ class UserService extends Service {
   async list(data) {
     const rows = await this.ctx.model.User.findAll({
       attributes: {
-        exclude: ['password']
-      }
+        exclude: ['password'],
+      },
     });
     return rows;
   }
 
   async removeByIds(ids) {
-    const rows = await this.ctx.model.User.destroy({
-      where: {
-        id: {
-          [Op.in]: ids,
-        },
+    // const rows = await this.ctx.model.User.destroy({
+    //   where: {
+    //     id: {
+    //       [Op.in]: ids,
+    //     },
+    //   },
+    // });
+    const deleteAt = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    await this.ctx.model.User.update(
+      {
+        deleteAt,
       },
-    });
-    return rows;
+      {
+        where: {
+          id: {
+            [Op.in]: ids,
+          },
+        },
+      }
+    );
   }
 
   async findById(id) {
@@ -133,8 +139,8 @@ class UserService extends Service {
         },
       },
       attributes: {
-        exclude: ['password']
-      }
+        exclude: ['password'],
+      },
     });
     return rows;
   }
