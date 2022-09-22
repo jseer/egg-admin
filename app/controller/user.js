@@ -85,6 +85,20 @@ class UserController extends Controller {
     const result = await ctx.service.user.getListByRoleId(id);
     ctx.success(result);
   }
+
+  async getLoginHistory() {
+    const { ctx } = this;
+    const user = ctx.session.user;
+    if (user.type === USER_TYPE.ACCOUNT) {
+      const result = await ctx.service.user.getLoginHistory(
+        user.id,
+        ctx.helper.query2where(ctx.query)
+      );
+      ctx.success(result);
+      return;
+    }
+    ctx.success([]);
+  }
 }
 
 module.exports = UserController;

@@ -175,6 +175,27 @@ class UserService extends Service {
       current,
     };
   }
+
+  async getLoginHistory(id, data) {
+    const { pageSize, current, ...where } = data;
+    const { count, rows } = await this.ctx.model.LoginRecords.findAndCountAll({
+      where: {
+        userId: id,
+        ...where,
+      },
+      limit: Number(pageSize),
+      offset: Number(pageSize * (current - 1)),
+      attributes: {
+        exclude: ['userId'],
+      },
+    });
+    return {
+      total: count,
+      list: rows,
+      pageSize,
+      current,
+    };
+  }
 }
 
 module.exports = UserService;

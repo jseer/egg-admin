@@ -15,6 +15,7 @@ module.exports = app => {
   router.post('/api/user/logout', controller.user.logout);
   router.get('/api/user/getCurrent', controller.user.getCurrent);
   router.get('/api/user/getListByRoleId', controller.user.getListByRoleId);
+  router.get('/api/user/getLoginHistory', controller.user.getLoginHistory);
 
   router.post('/api/role/create', controller.role.create);
   router.get('/api/role/page', controller.role.page);
