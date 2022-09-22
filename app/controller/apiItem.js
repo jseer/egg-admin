@@ -33,8 +33,32 @@ class ApiItemController extends Controller {
   async removeByIds() {
     const { ctx } = this;
     const { ids } = ctx.request.body;
-    const result = await ctx.service.apiItem.removeByIds(ids);
-    ctx.success(result);
+    const data = await ctx.service.apiItem.removeByIds(ids);
+    if (data) {
+      ctx.fail(data.message, data.code);
+    } else {
+      ctx.success(true);
+    }
+  }
+
+  async updateStatus() {
+    const { ctx } = this;
+    await ctx.service.apiItem.updateStatus(ctx.request.body);
+    ctx.success(true);
+  }
+
+  async updateCheckStatus() {
+    const { ctx } = this;
+    const { id, type, status } = ctx.request.body;
+    const updateData = {};
+    if (type === 'needLogin' && status === 0) {
+      updateData.needCheck = 0;
+    } else if (type === 'needCheck' && status === 1) {
+      updateData.needLogin = 1;
+    }
+    updateData[type] = status;
+    await ctx.service.apiItem.updateCheckStatus(id, updateData);
+    ctx.success(true);
   }
 
   async listByRoleId() {

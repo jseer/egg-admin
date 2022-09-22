@@ -30,6 +30,7 @@ module.exports = app => {
   router.post('/api/menu/removeByIds', controller.menu.removeByIds);
   router.get('/api/menu/listByRoleId', controller.menu.listByRoleId);
   router.get('/api/menu/authList', controller.menu.authList);
+  router.post('/api/menu/updateStatus', controller.menu.updateStatus);
 
   router.post('/api/apiItem/create', controller.apiItem.create);
   router.get('/api/apiItem/list', controller.apiItem.list);
@@ -37,6 +38,8 @@ module.exports = app => {
   router.post('/api/apiItem/removeByIds', controller.apiItem.removeByIds);
   router.get('/api/apiItem/listByRoleId', controller.apiItem.listByRoleId);
   router.get('/api/apiItem/getDistributableList', controller.apiItem.getDistributableList);
+  router.post('/api/apiItem/updateStatus', controller.apiItem.updateStatus);
+  router.post('/api/apiItem/updateCheckStatus', controller.apiItem.updateCheckStatus);
 
   router.post('/api/dictionaries/create', controller.dictionaries.create);
   router.get('/api/dictionaries/page', controller.dictionaries.page);
@@ -48,4 +51,7 @@ module.exports = app => {
 
   router.post('/api/tourist/login', controller.tourist.login);
   router.get('/api/tourist/page', controller.tourist.page);
+
+  router.get('/api/system/getLoginRecords', controller.system.getLoginRecords);
+
 };

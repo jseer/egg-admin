@@ -35,7 +35,7 @@ module.exports = (app) => {
       },
       status: {
         type: TINYINT,
-        allowNull: false,
+        defaultValue: 1,
       },
       createTime: {
         type: STRING(255),

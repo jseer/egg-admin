@@ -1,6 +1,7 @@
 const Service = require('egg').Service;
 const { Op } = require('sequelize');
 const dayjs = require('dayjs');
+
 class UserService extends Service {
   async create(user) {
     const result = await this.ctx.model.User.create(user);
@@ -15,7 +16,7 @@ class UserService extends Service {
       });
       const {
         commonConfig: { accountRoles },
-      } = this.ctx.app.config;
+      } = this.app.config;
       const roles = await ctx.model.Role.findAll({
         attributes: ['id'],
         where: {
@@ -23,18 +24,21 @@ class UserService extends Service {
             [Op.in]: accountRoles,
           },
         },
-        raw: true,
       });
-      const records = roles.map((role) => ({userId: result.id, roleId: role.id}));
+      const records = roles.map((role) => ({
+        userId: result.id,
+        roleId: role.id,
+      }));
       await ctx.model.UserRole.bulkCreate(records, {
         transaction: t,
-      })
+      });
     });
     return result;
   }
 
   async login(user) {
-    const result = await this.ctx.model.User.findOne({
+    const { ctx } = this;
+    const result = await ctx.model.User.findOne({
       where: {
         name: user.name,
         password: user.password,
@@ -42,6 +46,15 @@ class UserService extends Service {
       attributes: {
         exclude: ['password'],
       },
+    });
+    //TODO:
+    const info = ctx.helper.ip2Locate('58.248.12.198' || ctx.ip);
+    await ctx.model.LoginRecords.create({
+      name: result.name,
+      userId: result.id,
+      loginTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      type: result.type,
+      ...info,
     });
     return result;
   }
@@ -143,6 +156,24 @@ class UserService extends Service {
       },
     });
     return rows;
+  }
+
+  async getLoginRecords(data) {
+    const { pageSize, current, ...where } = data;
+    const { count, rows } = await this.ctx.model.LoginRecords.findAndCountAll({
+      where,
+      limit: Number(pageSize),
+      offset: Number(pageSize * (current - 1)),
+      attributes: {
+        exclude: ['userId'],
+      },
+    });
+    return {
+      total: count,
+      list: rows,
+      pageSize,
+      current,
+    };
   }
 }
 

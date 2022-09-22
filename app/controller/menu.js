@@ -28,7 +28,11 @@ class MenuController extends Controller {
     const { ctx } = this;
     const { ids } = ctx.request.body;
     const result = await ctx.service.menu.removeByIds(ids);
-    ctx.success(result);
+    if (result) {
+      ctx.fail(result.message, result.code);
+    } else {
+      ctx.success(true);
+    }
   }
 
   async listByRoleId() {
@@ -37,14 +41,29 @@ class MenuController extends Controller {
     ctx.success(data);
   }
 
-  async authList() {
+  async updateStatus() {
     const { ctx } = this;
+    await ctx.service.menu.updateStatus(ctx.request.body);
+    ctx.success(true);
+  }
+
+  async authList() {
+    const { ctx, app } = this;
+    const {
+      config: {
+        commonConfig: { superAdmin, touristRoles },
+      },
+    } = app;
     const user = ctx.session.user;
     let menuList = [];
     if (user.type === USER_TYPE.ACCOUNT) {
-      menuList = await ctx.service.menu.authListByAccountUserId(user.id);
+      if (user.name === superAdmin) {
+        menuList = await ctx.service.menu.list({});
+      } else {
+        menuList = await ctx.service.menu.authListByAccountUserId(user.id);
+      }
     } else if (user.type === USER_TYPE.TOURIST) {
-
+      menuList = await ctx.service.menu.authListByTouristRoles(touristRoles);
     }
     ctx.success(ctx.helper.loopMenus(menuList));
   }

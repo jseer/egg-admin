@@ -2,6 +2,7 @@
 
 const Controller = require('egg').Controller;
 const { USER_TYPE } = require('../utils/common');
+const dayjs = require('dayjs');
 
 class UserController extends Controller {
   async create() {
@@ -18,9 +19,14 @@ class UserController extends Controller {
 
   async login() {
     const { ctx } = this;
-    const data = await ctx.service.user.login(ctx.request.body);
+    const body = ctx.request.body;
+    const data = await ctx.service.user.login(body);
     if (data) {
       ctx.session.user = data;
+      if (body.remember) {
+        const diff = dayjs().endOf('day').diff(dayjs());
+        ctx.session.maxAge = diff;
+      }
       ctx.success(data);
     } else {
       ctx.fail('用户名或者密码不正确');

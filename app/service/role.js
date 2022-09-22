@@ -154,6 +154,24 @@ class UserService extends Service {
       )
       .slice(0, -1);
   }
+
+  getRoleIdsSqlByRoleCodes(roleCodes, status = 1) {
+    const { ctx } = this;
+    return ctx.model.dialect.queryGenerator
+      .selectQuery(
+        'role',
+        {
+          attributes: ['id'],
+          where: {
+            code: {
+              [Op.in]: roleCodes,
+            },
+            status,
+          },
+        },
+        ctx.model.Role
+      ).slice(0, -1);
+  }
 }
 
 module.exports = UserService;

@@ -14,8 +14,14 @@ module.exports = function checkLogin() {
     ctx.session.user
     */
     const {
-      commonConfig: { disabledApiItemsConf, needCheckApiItemsConf },
+      commonConfig: { superAdmin, disabledApiItemsConf, needCheckApiItemsConf },
     } = ctx.app.config;
+
+    const user = ctx.session.user;
+    if (user.name === superAdmin) {
+      return next();
+    }
+
     let disabledApiItems = await ctx.service.redis.getDataByKey(
       disabledApiItemsConf.redisKey
     );
@@ -32,7 +38,6 @@ module.exports = function checkLogin() {
       return;
     }
 
-    const user = ctx.session.user;
     if (user) {
       let needCheckApiItems = await ctx.service.redis.getDataByKey(
         needCheckApiItemsConf.redisKey
@@ -54,7 +59,7 @@ module.exports = function checkLogin() {
         } else if (user.type === USER_TYPE.TOURIST) {
           apiItems = await ctx.service.apiItem.getApiItemsByRoleList(
             commonConfig.touristRoles,
-            where
+            needCheckApiItemsConf.params
           );
         }
         if (filterApi(apiItems, path, method)) {

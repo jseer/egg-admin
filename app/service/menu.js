@@ -1,5 +1,5 @@
 const Service = require('egg').Service;
-const { Op } = require('sequelize');
+const { Op, QueryTypes } = require('sequelize');
 
 class MenuService extends Service {
   async create(user) {
@@ -8,7 +8,7 @@ class MenuService extends Service {
   }
 
   async update(user) {
-    const { id, ...data } = user;
+    const { id, status, ...data } = user;
     const rows = await this.ctx.model.Menu.update(data, {
       where: {
         id,
@@ -50,15 +50,98 @@ class MenuService extends Service {
     return rows;
   }
 
-  async removeByIds(ids) {
-    const rows = await this.ctx.model.Menu.destroy({
-      where: {
-        id: {
-          [Op.in]: ids,
+  async recursionDestroy(ids) {
+    const { ctx } = this;
+    const deleteIds = await ctx.model.query(
+      `
+          SELECT
+            id
+          FROM
+            menu AS a 
+          WHERE
+            id IN (:ids) 
+            AND NOT EXISTS (
+            SELECT
+              id 
+            FROM
+              menu AS b 
+            WHERE
+            parent_id = a.id 
+            );
+    `,
+      {
+        model: ctx.model.Menu,
+        mapToModel: true,
+        type: QueryTypes.SELECT,
+        replacements: { ids },
+      }
+    );
+    let rows = 0;
+    if (deleteIds.length > 0) {
+      rows = await ctx.model.Menu.destroy({
+        where: {
+          id: {
+            [Op.in]: deleteIds.map((d) => d.id),
+          },
         },
+      });
+    }
+
+    const list = await ctx.model.Menu.findAll({
+      where: {
+        [Op.and]: [
+          {
+            id: {
+              [Op.in]: ids,
+            },
+          },
+        ],
       },
     });
-    return rows;
+    if (rows && list.length) {
+      const newIds = list.map((l) => l.id);
+      return this.recursionDestroy(newIds);
+    }
+    return list;
+  }
+
+  async removeByIds(ids) {
+    const restList = await this.recursionDestroy(ids);
+    if (restList.length > 0) {
+      return {
+        code: 500,
+        message: `删除子项，${restList.map((l) => l.name).join(',')}才能删除`,
+      };
+    }
+  }
+
+  async recursionFindIdsById(ids, idArr) {
+    const { ctx } = this;
+    const children = await ctx.model.Menu.findAll({
+      where: {
+        parentId: ids,
+      },
+    });
+    const childIds = children.map((c) => c.id);
+    idArr.push.apply(idArr, childIds);
+    if (childIds.length) {
+      await this.recursionFindIdsById(childIds, idArr);
+    }
+  }
+
+  async updateStatus(data) {
+    const { ctx } = this;
+    const { id, status } = data;
+    const idArr = [id];
+    await this.recursionFindIdsById([id], idArr);
+    await ctx.model.Menu.update(
+      { status },
+      {
+        where: {
+          id: idArr,
+        },
+      }
+    );
   }
 
   async authListByAccountUserId(userId) {
@@ -79,13 +162,20 @@ class MenuService extends Service {
     return rows;
   }
 
-  async authListByAccountTourist(ids) {
-    const rows = await this.ctx.model.Menu.destroy({
+  async authListByTouristRoles(roles) {
+    const { ctx } = this;
+    const rows = await ctx.model.Menu.findAll({
       where: {
+        status: 1,
         id: {
-          [Op.in]: ids,
+          [Op.in]: ctx.model.literal(
+            `(${this.getMenuIdsSqlByRoleIdsSql(
+              ctx.service.role.getRoleIdsSqlByRoleCodes(roles)
+            )})`
+          ),
         },
       },
+      raw: true,
     });
     return rows;
   }

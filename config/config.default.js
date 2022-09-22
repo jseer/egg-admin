@@ -39,7 +39,7 @@ module.exports = (appInfo) => {
       },
     },
     commonConfig: {
-      // superAdmin: 'admin',
+      superAdmin: 'root',
       touristRoles: ['tourist'],
       accountRoles: ['normal_user'],
       disabledApiItemsConf: {
@@ -55,6 +55,7 @@ module.exports = (appInfo) => {
           status: 1,
           needLogin: 1,
           needCheck: 1,
+          type: '2',
         },
       }
     },

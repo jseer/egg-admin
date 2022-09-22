@@ -13,12 +13,12 @@ class RedisService extends Service {
 
   async pullApiItemsToRedis(key, where) {
     const result = await this.ctx.service.apiItem.getApiItemsForCheck(where);
-    await this.ctx.app.redis.set(this.generateKey(key), JSON.stringify(result));
+    await this.app.redis.set(this.generateKey(key), JSON.stringify(result));
     return result;
   }
 
   async getDataByKey(key) {
-    const result = await this.ctx.app.redis.get(this.generateKey(key));
+    const result = await this.app.redis.get(this.generateKey(key));
     return JSON.parse(result);
   }
 }

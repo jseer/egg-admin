@@ -33,6 +33,7 @@ module.exports = function (app) {
       },
       status: {
         type: DataTypes.TINYINT,
+        defaultValue: 1,
       },
       needLogin: {
         type: DataTypes.TINYINT,
@@ -44,8 +45,6 @@ module.exports = function (app) {
       },
       method: {
         type: DataTypes.STRING(255),
-        field: 'method',
-        allowNull: false,
       },
       createTime: {
         type: DataTypes.STRING(255),

@@ -1,3 +1,5 @@
+const RemoteLogger = require('./app/utils/remoteLogger');
+
 class AppBootHook {
   constructor(app) {
     this.app = app;
@@ -8,30 +10,19 @@ class AppBootHook {
       commonConfig: { disabledApiItemsConf, needCheckApiItemsConf },
     } = this.app.config;
     const ctx = await this.app.createAnonymousContext();
+    this.app.getLogger('logger').set(
+      'remote',
+      new RemoteLogger({ app: this.app })
+    );
     const disabledApiItems = await ctx.service.redis.getDataByKey(
       disabledApiItemsConf.redisKey
     );
     const needCheckApiItems = await ctx.service.redis.getDataByKey(
       needCheckApiItemsConf.redisKey
     );
-    const promiseArr = [];
-    if (!disabledApiItems) {
-      promiseArr.push(
-        ctx.service.redis.pullApiItemsToRedis(
-          disabledApiItemsConf.redisKey,
-          disabledApiItemsConf.params
-        )
-      );
+    if (!(disabledApiItems && needCheckApiItems)) {
+      await ctx.service.apiItems.pullCommonApiItemsToRedis();
     }
-    if (!needCheckApiItems) {
-      promiseArr.push(
-        ctx.service.redis.pullApiItemsToRedis(
-          needCheckApiItemsConf.redisKey,
-          needCheckApiItemsConf.params
-        )
-      );
-    }
-    await Promise.all(promiseArr);
   }
 }
 

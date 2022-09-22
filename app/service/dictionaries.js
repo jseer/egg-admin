@@ -17,15 +17,16 @@ class DictionariesService extends Service {
     return rows;
   }
   async page(data) {
+    const { ctx } = this;
     const { pageSize, current, ...whereData } = data;
     const limit = Number(pageSize);
     const offset = Number(pageSize * (current - 1));
-    const { count, rows } = await this.ctx.model.Dictionaries.findAndCountAll({
+    const { count, rows } = await ctx.model.Dictionaries.findAndCountAll({
       where: whereData,
       limit,
       offset,
       include: {
-        model: this.ctx.app.model.DictionariesItem,
+        model: ctx.model.DictionariesItem,
         as: 'items',
         attributes: {
           exclude: ['dictionariesId'],

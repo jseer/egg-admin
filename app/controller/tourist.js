@@ -11,7 +11,6 @@ class TouristController extends Controller {
     const data = ctx.helper.ip2Locate('58.248.12.198' || ctx.ip);
     const result = await ctx.service.tourist.create({
       ...data,
-      ip: ctx.ip,
       browser,
     });
     ctx.session.user = result;

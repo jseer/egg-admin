@@ -70,13 +70,16 @@ module.exports = {
 
   ip2Locate(ip) {
     if (this.isIp(ip) === false) {
-      return null;
+      return {
+        ip,
+      };
     }
     const res = DatabaseClient.findInfo(ip, 'CN');
     return {
       country: res.countryName, //  国家
       province: res.regionName, //  省
       city: res.cityName, //  市
+      ip,
     };
   },
 
