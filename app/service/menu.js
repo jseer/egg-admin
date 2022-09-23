@@ -18,15 +18,10 @@ class MenuService extends Service {
   }
   async list(data) {
     const { ctx } = this;
-    const where = data;
-    if (where.code) {
-      where.code = {
-        [Op.like]: `%${where.code}%`,
-      };
-    }
-    if (where.name) {
-      where.name = {
-        [Op.like]: `%${where.name}%`,
+    let where;
+    if (Object.keys(data).length > 0) {
+      where = {
+        [Op.or]: [data, { type: '1' }],
       };
     }
     const rows = await ctx.model.Menu.findAll({

@@ -18,7 +18,7 @@ class UserController extends Controller {
   }
 
   async login() {
-    const { ctx } = this;
+    const { ctx, app } = this;
     const body = ctx.request.body;
     const data = await ctx.service.user.login(body);
     if (data) {
@@ -26,6 +26,9 @@ class UserController extends Controller {
       if (body.remember) {
         const diff = dayjs().endOf('day').diff(dayjs());
         ctx.session.maxAge = diff;
+      } else {
+        const { commonConfig: { defaultLoginMaxAge } } = app.config;
+        ctx.session.maxAge = defaultLoginMaxAge;
       }
       ctx.success(data);
     } else {
@@ -98,6 +101,12 @@ class UserController extends Controller {
       return;
     }
     ctx.success([]);
+  }
+
+  async validateByNameOrEmail() {
+    const { ctx } = this;
+    const result = await ctx.service.user.validateByNameOrEmail(ctx.query);
+    ctx.success(result);
   }
 }
 

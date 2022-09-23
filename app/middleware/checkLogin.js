@@ -14,11 +14,16 @@ module.exports = function checkLogin() {
     ctx.session.user
     */
     const {
-      commonConfig: { superAdmin, disabledApiItemsConf, needCheckApiItemsConf },
+      commonConfig: {
+        superAdmin,
+        disabledApiItemsConf,
+        needCheckApiItemsConf,
+        notNeedLoginApiItemsConf,
+      },
     } = ctx.app.config;
 
     const user = ctx.session.user;
-    if (user.name === superAdmin) {
+    if (user?.name === superAdmin) {
       return next();
     }
 
@@ -34,7 +39,7 @@ module.exports = function checkLogin() {
     const path = ctx.path;
     const method = ctx.method;
     if (filterApi(disabledApiItems, path, method)) {
-      ctx.throw(403);
+      ctx.fail('管理员已禁用该功能', 403);
       return;
     }
 
@@ -70,6 +75,18 @@ module.exports = function checkLogin() {
         return next();
       }
     } else {
+      let notNeedLoginApiItems = await ctx.service.redis.getDataByKey(
+        notNeedLoginApiItemsConf.redisKey
+      );
+      if (!notNeedLoginApiItems) {
+        notNeedLoginApiItems = await ctx.service.redis.pullApiItemsToRedis(
+          notNeedLoginApiItemsConf.redisKey,
+          notNeedLoginApiItemsConf.params
+        );
+      }
+      if (filterApi(notNeedLoginApiItems, path, method)) {
+        return next();
+      }
       ctx.fail('未登录', 401);
     }
   };

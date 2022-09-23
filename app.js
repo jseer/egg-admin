@@ -7,7 +7,7 @@ class AppBootHook {
 
   async didReady() {
     const {
-      commonConfig: { disabledApiItemsConf, needCheckApiItemsConf },
+      commonConfig: { disabledApiItemsConf, needCheckApiItemsConf, notNeedLoginApiItemsConf },
     } = this.app.config;
     const ctx = await this.app.createAnonymousContext();
     this.app.getLogger('logger').set(
@@ -20,8 +20,12 @@ class AppBootHook {
     const needCheckApiItems = await ctx.service.redis.getDataByKey(
       needCheckApiItemsConf.redisKey
     );
-    if (!(disabledApiItems && needCheckApiItems)) {
-      await ctx.service.apiItems.pullCommonApiItemsToRedis();
+
+    const notNeedLoginApiItems = await ctx.service.redis.getDataByKey(
+      notNeedLoginApiItemsConf.redisKey
+    );
+    if (!(disabledApiItems && needCheckApiItems && notNeedLoginApiItems)) {
+      await ctx.service.apiItem.pullCommonApiItemsToRedis();
     }
   }
 }

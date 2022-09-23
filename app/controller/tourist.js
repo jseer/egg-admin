@@ -4,7 +4,7 @@ const Controller = require('egg').Controller;
 
 class TouristController extends Controller {
   async login() {
-    const { ctx } = this;
+    const { ctx, app } = this;
     const ua = parser(ctx.headers['user-agent']);
     const browser = ua.browser.name + '/' + ua.browser.version;
     //TODO:
@@ -14,6 +14,8 @@ class TouristController extends Controller {
       browser,
     });
     ctx.session.user = result;
+    const { commonConfig: { defaultLoginMaxAge } } = app.config;
+    ctx.session.maxAge = defaultLoginMaxAge;
     ctx.success(result);
   }
 

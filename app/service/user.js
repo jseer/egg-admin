@@ -10,7 +10,7 @@ class UserService extends Service {
 
   async register(user) {
     const { ctx } = this;
-    const result = await ctx.model.transaction(async (t) => {
+    return ctx.model.transaction(async (t) => {
       const result = await ctx.model.User.create(user, {
         transaction: t,
       });
@@ -32,8 +32,8 @@ class UserService extends Service {
       await ctx.model.UserRole.bulkCreate(records, {
         transaction: t,
       });
+      return true;
     });
-    return result;
   }
 
   async login(user) {
@@ -42,9 +42,6 @@ class UserService extends Service {
       where: {
         name: user.name,
         password: user.password,
-      },
-      attributes: {
-        exclude: ['password'],
       },
     });
     //TODO:
@@ -74,9 +71,6 @@ class UserService extends Service {
       where: whereData,
       limit: Number(pageSize),
       offset: Number(pageSize * (current - 1)),
-      attributes: {
-        exclude: ['password'],
-      },
       include: {
         model: this.ctx.model.Role,
         where: roles
@@ -85,9 +79,10 @@ class UserService extends Service {
             }
           : undefined,
         through: {
-          attributes: [],
+          // attributes: [],
         },
       },
+      order: [['id', 'DESC']],
     });
     return {
       total: count,
@@ -97,11 +92,10 @@ class UserService extends Service {
     };
   }
 
-  async list(data) {
+  async list(where) {
     const rows = await this.ctx.model.User.findAll({
-      attributes: {
-        exclude: ['password'],
-      },
+      where,
+      order: [['id', 'DESC']],
     });
     return rows;
   }
@@ -130,11 +124,7 @@ class UserService extends Service {
   }
 
   async findById(id) {
-    const rows = await this.ctx.model.User.findByPk(id, {
-      attributes: {
-        exclude: ['password'],
-      },
-    });
+    const rows = await this.ctx.model.User.findByPk(id);
     return rows;
   }
 
@@ -151,9 +141,6 @@ class UserService extends Service {
         )`),
         },
       },
-      attributes: {
-        exclude: ['password'],
-      },
     });
     return rows;
   }
@@ -167,6 +154,7 @@ class UserService extends Service {
       attributes: {
         exclude: ['userId'],
       },
+      order: [['id', 'DESC']],
     });
     return {
       total: count,
@@ -188,6 +176,7 @@ class UserService extends Service {
       attributes: {
         exclude: ['userId'],
       },
+      order: [['id', 'DESC']],
     });
     return {
       total: count,
@@ -195,6 +184,18 @@ class UserService extends Service {
       pageSize,
       current,
     };
+  }
+
+  async validateByNameOrEmail(where) {
+    const { ctx } = this;
+    const data = await ctx.model.User.findOne({
+      where,
+      paranoid: false,
+    });
+    if (data) {
+      return true;
+    }
+    return false;
   }
 }
 

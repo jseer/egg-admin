@@ -6,7 +6,7 @@ class ApiItemController extends Controller {
   async create() {
     const { ctx } = this;
     const data = ctx.request.body;
-    if (!data.needLogin) {
+    if (data.type === '2' && !data.needLogin) {
       data.needCheck = 0;
     }
     const result = await ctx.service.apiItem.create(data);
@@ -16,7 +16,7 @@ class ApiItemController extends Controller {
   async update() {
     const { ctx } = this;
     const data = ctx.request.body;
-    if (!data.needLogin) {
+    if (data.type === '2' && !data.needLogin) {
       data.needCheck = 0;
     }
     await ctx.service.apiItem.update(data);

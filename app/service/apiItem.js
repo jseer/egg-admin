@@ -4,7 +4,7 @@ const { Op, QueryTypes } = require('sequelize');
 class ApiItemService extends Service {
   async create(user) {
     const { ctx } = this;
-    return await ctx.model.transaction(async (t) => {
+    return ctx.model.transaction(async (t) => {
       const data = await this.ctx.model.ApiItem.create(user, {
         transaction: t,
       });
@@ -32,17 +32,16 @@ class ApiItemService extends Service {
   }
   async list(data) {
     const { ctx } = this;
-    const where = data;
-    if (where.code) {
-      where.code = {
-        [Op.like]: `%${where.code}%`,
+    let where;
+    if (Object.keys(data).length > 0) {
+      where = {
+        [Op.or]: [data, { type: '1' }],
       };
     }
     const rows = await ctx.model.ApiItem.findAll({
       where,
       raw: true,
     });
-
     return rows;
   }
 
@@ -137,26 +136,34 @@ class ApiItemService extends Service {
     const { id, status } = data;
     const idArr = [id];
     await this.recursionFindIdsById([id], idArr);
-    await ctx.model.ApiItem.update(
-      { status },
-      {
-        where: {
-          id: idArr,
+    await ctx.model.transaction(async (t) => {
+      await ctx.model.ApiItem.update(
+        { status },
+        {
+          where: {
+            id: idArr,
+          },
         },
-      }
-    );
+        { transaction: t }
+      );
+      await this.pullCommonApiItemsToRedis();
+    });
   }
 
   async updateCheckStatus(id, data) {
     const { ctx } = this;
-    await ctx.model.ApiItem.update(
-      data,
-      {
-        where: {
-          id,
+    await ctx.model.transaction(async (t) => {
+      await ctx.model.ApiItem.update(
+        data,
+        {
+          where: {
+            id,
+          },
         },
-      }
-    );
+        { transaction: t }
+      );
+      await this.pullCommonApiItemsToRedis();
+    });
   }
 
   async listByRoleId(roleId) {
@@ -266,7 +273,7 @@ class ApiItemService extends Service {
   async pullCommonApiItemsToRedis() {
     const { ctx, app } = this;
     const {
-      commonConfig: { disabledApiItemsConf, needCheckApiItemsConf },
+      commonConfig: { disabledApiItemsConf, needCheckApiItemsConf, notNeedLoginApiItemsConf },
     } = app.config;
     await Promise.all([
       ctx.service.redis.pullApiItemsToRedis(
@@ -276,6 +283,10 @@ class ApiItemService extends Service {
       ctx.service.redis.pullApiItemsToRedis(
         needCheckApiItemsConf.redisKey,
         needCheckApiItemsConf.params
+      ),
+      ctx.service.redis.pullApiItemsToRedis(
+        notNeedLoginApiItemsConf.redisKey,
+        notNeedLoginApiItemsConf.params
       ),
     ]);
   }
