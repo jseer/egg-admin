@@ -8,7 +8,7 @@ class ApiItemService extends Service {
       const data = await this.ctx.model.ApiItem.create(user, {
         transaction: t,
       });
-      await this.pullCommonApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis();
       return data;
     });
   }
@@ -26,7 +26,7 @@ class ApiItemService extends Service {
         },
         { transaction: t }
       );
-      await this.pullCommonApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis();
       return rows;
     });
   }
@@ -113,7 +113,7 @@ class ApiItemService extends Service {
           message: `删除子项，${restList.map((l) => l.name).join(',')}才能删除`,
         };
       }
-      await this.pullCommonApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis();
     });
   }
 
@@ -146,7 +146,7 @@ class ApiItemService extends Service {
         },
         { transaction: t }
       );
-      await this.pullCommonApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis();
     });
   }
 
@@ -162,7 +162,7 @@ class ApiItemService extends Service {
         },
         { transaction: t }
       );
-      await this.pullCommonApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis();
     });
   }
 
@@ -270,25 +270,28 @@ class ApiItemService extends Service {
     return rows;
   }
 
-  async pullCommonApiItemsToRedis() {
-    const { ctx, app } = this;
+  async pullGivenApiItemsToRedis() {
+    const { app, ctx } = this;
     const {
-      commonConfig: { disabledApiItemsConf, needCheckApiItemsConf, notNeedLoginApiItemsConf },
+      commonConfig: {
+        apiItemsConf: { redisKey, disabled, needCheck, notNeedLogin },
+      },
     } = app.config;
-    await Promise.all([
-      ctx.service.redis.pullApiItemsToRedis(
-        disabledApiItemsConf.redisKey,
-        disabledApiItemsConf.params
-      ),
-      ctx.service.redis.pullApiItemsToRedis(
-        needCheckApiItemsConf.redisKey,
-        needCheckApiItemsConf.params
-      ),
-      ctx.service.redis.pullApiItemsToRedis(
-        notNeedLoginApiItemsConf.redisKey,
-        notNeedLoginApiItemsConf.params
-      ),
+    const result = await Promise.all([
+      this.getApiItemsForCheck(disabled),
+      this.getApiItemsForCheck(needCheck),
+      this.getApiItemsForCheck(notNeedLogin),
     ]);
+    await ctx.service.redis.hmset(
+      redisKey,
+      'disabled',
+      JSON.stringify(result[0]),
+      'needCheck',
+      JSON.stringify(result[1]),
+      'notNeedLogin',
+      JSON.stringify(result[2])
+    );
+    return result;
   }
 }
 

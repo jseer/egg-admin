@@ -38,30 +38,25 @@ module.exports = (appInfo) => {
     superAdmin: 'root',
     touristRoles: ['tourist'],
     accountRoles: ['normal_user'],
-    disabledApiItemsConf: {
-      redisKey: 'disabledApiItems',
-      params: {
+    apiItemsConf: {
+      redisKey: 'apiItems',
+      disabled: {
         status: 0,
         type: '2',
       },
-    },
-    needCheckApiItemsConf: {
-      redisKey: 'needCheckApiItems',
-      params: {
+      needCheck: {
         status: 1,
         needLogin: 1,
         needCheck: 1,
         type: '2',
       },
-    },
-    notNeedLoginApiItemsConf: {
-      redisKey: 'notNeedLoginApiItems',
-      params: {
+      notNeedLogin: {
         status: 1,
         needLogin: 0,
         type: '2',
       },
     },
+
     defaultLoginMaxAge: 3600000,
   };
 

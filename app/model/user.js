@@ -54,6 +54,7 @@ module.exports = (app) => {
     {
       tableName: 'user',
       timestamps: false,
+      custom_paranoid: true,
       indexes: [
         {
           name: 'PRIMARY',

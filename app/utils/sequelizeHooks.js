@@ -26,7 +26,7 @@ module.exports = (appInfo) => {
       options.skip.push('createTime', 'updateTime');
     },
     beforeFindAfterOptions(options) {
-      if (this.name === 'user') {
+      if (this.options.custom_paranoid) {
         if (options.paranoid !== false) {
           options.where.delete_at = {
             [Op.is]: null,
@@ -38,15 +38,18 @@ module.exports = (appInfo) => {
           const item = options.attributes[i];
           const key = Array.isArray(item) ? item[0] : item;
           if (userBlankList.includes(key)) {
-            options.attributes.splice(i, 1);
+            const temp = options.attributes[i];
+            options.attributes[i] = options.attributes[len - 1];
+            options.attributes[len - 1] = temp;
             len--;
             i--;
           }
         }
+        options.attributes.splice(len);
       }
     },
     beforeCount(options) {
-      if (this.name === 'user' && options.paranoid !== false) {
+      if (this.options.custom_paranoid && options.paranoid !== false) {
         options.where.delete_at = {
           [Op.is]: null,
         };

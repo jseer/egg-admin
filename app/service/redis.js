@@ -11,15 +11,23 @@ class RedisService extends Service {
     return this.redisPrefixKey + this.separator + key;
   }
 
-  async pullApiItemsToRedis(key, where) {
-    const result = await this.ctx.service.apiItem.getApiItemsForCheck(where);
-    await this.app.redis.set(this.generateKey(key), JSON.stringify(result));
-    return result;
+  async exist(key) {
+    return this.app.redis.exists(this.generateKey(key));
   }
 
-  async getDataByKey(key) {
-    const result = await this.app.redis.get(this.generateKey(key));
-    return JSON.parse(result);
+  async hgetall(key) {
+    const result = await this.app.redis.hgetall(this.generateKey(key));
+    if (result) {
+      Object.keys(result).forEach((k) => {
+        result[k] = JSON.parse(result[k]);
+      });
+      return result;
+    }
+    return null;
+  }
+
+  async hmset(key, ...arg) {
+    await this.app.redis.hmset(this.generateKey(key), ...arg);
   }
 }
 

@@ -14,12 +14,7 @@ module.exports = function checkLogin() {
     ctx.session.user
     */
     const {
-      commonConfig: {
-        superAdmin,
-        disabledApiItemsConf,
-        needCheckApiItemsConf,
-        notNeedLoginApiItemsConf,
-      },
+      commonConfig: { superAdmin, apiItemsConf },
     } = ctx.app.config;
 
     const user = ctx.session.user;
@@ -27,44 +22,30 @@ module.exports = function checkLogin() {
       return next();
     }
 
-    let disabledApiItems = await ctx.service.redis.getDataByKey(
-      disabledApiItemsConf.redisKey
-    );
-    if (!disabledApiItems) {
-      disabledApiItems = await ctx.service.redis.pullApiItemsToRedis(
-        disabledApiItemsConf.redisKey,
-        disabledApiItemsConf.params
-      );
+    let givenApiItems = await ctx.service.redis.hgetall(apiItemsConf.redisKey);
+    if (!givenApiItems) {
+      givenApiItems = await ctx.service.apiItem.pullGivenApiItemsToRedis();
     }
     const path = ctx.path;
     const method = ctx.method;
-    if (filterApi(disabledApiItems, path, method)) {
+    if (filterApi(givenApiItems.disabled, path, method)) {
       ctx.fail('管理员已禁用该功能', 403);
       return;
     }
 
     if (user) {
-      let needCheckApiItems = await ctx.service.redis.getDataByKey(
-        needCheckApiItemsConf.redisKey
-      );
-      if (!needCheckApiItems) {
-        needCheckApiItems = await ctx.service.redis.pullApiItemsToRedis(
-          needCheckApiItemsConf.redisKey,
-          needCheckApiItemsConf.params
-        );
-      }
-      if (filterApi(needCheckApiItems, path, method)) {
+      if (filterApi(givenApiItems.needCheck, path, method)) {
         const { commonConfig } = ctx.app.config;
         let apiItems = null;
         if (user.type === USER_TYPE.ACCOUNT) {
           apiItems = await ctx.service.apiItem.getApiItemsByUserId(
             user.id,
-            needCheckApiItemsConf.params
+            apiItemsConf.needCheck
           );
         } else if (user.type === USER_TYPE.TOURIST) {
           apiItems = await ctx.service.apiItem.getApiItemsByRoleList(
             commonConfig.touristRoles,
-            needCheckApiItemsConf.params
+            apiItemsConf.needCheck
           );
         }
         if (filterApi(apiItems, path, method)) {
@@ -75,16 +56,7 @@ module.exports = function checkLogin() {
         return next();
       }
     } else {
-      let notNeedLoginApiItems = await ctx.service.redis.getDataByKey(
-        notNeedLoginApiItemsConf.redisKey
-      );
-      if (!notNeedLoginApiItems) {
-        notNeedLoginApiItems = await ctx.service.redis.pullApiItemsToRedis(
-          notNeedLoginApiItemsConf.redisKey,
-          notNeedLoginApiItemsConf.params
-        );
-      }
-      if (filterApi(notNeedLoginApiItems, path, method)) {
+      if (filterApi(givenApiItems.notNeedLogin, path, method)) {
         return next();
       }
       ctx.fail('未登录', 401);
