@@ -23,7 +23,7 @@ module.exports = function checkLogin() {
     }
 
     let givenApiItems = await ctx.service.redis.hgetall(apiItemsConf.redisKey);
-    if (!givenApiItems) {
+    if (!givenApiItems.disabled) {
       givenApiItems = await ctx.service.apiItem.pullGivenApiItemsToRedis();
     }
     const path = ctx.path;
@@ -34,18 +34,18 @@ module.exports = function checkLogin() {
     }
 
     if (user) {
-      if (filterApi(givenApiItems.needCheck, path, method)) {
+      if (filterApi(givenApiItems.needLoginCheck, path, method)) {
         const { commonConfig } = ctx.app.config;
         let apiItems = null;
         if (user.type === USER_TYPE.ACCOUNT) {
           apiItems = await ctx.service.apiItem.getApiItemsByUserId(
             user.id,
-            apiItemsConf.needCheck
+            apiItemsConf.needLoginCheck
           );
         } else if (user.type === USER_TYPE.TOURIST) {
           apiItems = await ctx.service.apiItem.getApiItemsByRoleList(
             commonConfig.touristRoles,
-            apiItemsConf.needCheck
+            apiItemsConf.needLoginCheck
           );
         }
         if (filterApi(apiItems, path, method)) {

@@ -17,13 +17,13 @@ class RedisService extends Service {
 
   async hgetall(key) {
     const result = await this.app.redis.hgetall(this.generateKey(key));
-    if (result) {
-      Object.keys(result).forEach((k) => {
+    const hashKeys = Object.keys(result);
+    if (hashKeys.length > 0) {
+      hashKeys.forEach((k) => {
         result[k] = JSON.parse(result[k]);
       });
-      return result;
     }
-    return null;
+    return result;
   }
 
   async hmset(key, ...arg) {

@@ -39,9 +39,9 @@ module.exports = function (app) {
         type: DataTypes.TINYINT,
         field: 'need_login',
       },
-      needCheck: {
+      needLoginCheck: {
         type: DataTypes.TINYINT,
-        field: 'need_check',
+        field: 'need_login_check',
       },
       method: {
         type: DataTypes.STRING(255),

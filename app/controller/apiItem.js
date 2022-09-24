@@ -7,7 +7,7 @@ class ApiItemController extends Controller {
     const { ctx } = this;
     const data = ctx.request.body;
     if (data.type === '2' && !data.needLogin) {
-      data.needCheck = 0;
+      data.needLoginCheck = 0;
     }
     const result = await ctx.service.apiItem.create(data);
     ctx.success(result);
@@ -17,7 +17,7 @@ class ApiItemController extends Controller {
     const { ctx } = this;
     const data = ctx.request.body;
     if (data.type === '2' && !data.needLogin) {
-      data.needCheck = 0;
+      data.needLoginCheck = 0;
     }
     await ctx.service.apiItem.update(data);
     ctx.success(true);
@@ -52,8 +52,8 @@ class ApiItemController extends Controller {
     const { id, type, status } = ctx.request.body;
     const updateData = {};
     if (type === 'needLogin' && status === 0) {
-      updateData.needCheck = 0;
-    } else if (type === 'needCheck' && status === 1) {
+      updateData.needLoginCheck = 0;
+    } else if (type === 'needLoginCheck' && status === 1) {
       updateData.needLogin = 1;
     }
     updateData[type] = status;

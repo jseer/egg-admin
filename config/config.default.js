@@ -44,10 +44,10 @@ module.exports = (appInfo) => {
         status: 0,
         type: '2',
       },
-      needCheck: {
+      needLoginCheck: {
         status: 1,
         needLogin: 1,
-        needCheck: 1,
+        needLoginCheck: 1,
         type: '2',
       },
       notNeedLogin: {

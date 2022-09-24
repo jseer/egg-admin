@@ -15,7 +15,7 @@ class ApiItemService extends Service {
 
   async update(user) {
     const { ctx } = this;
-    const { id, status, needCheck, needLogin, ...data } = user;
+    const { id, status, needLoginCheck, needLogin, ...data } = user;
     return await ctx.model.transaction(async (t) => {
       const rows = await this.ctx.model.ApiItem.update(
         data,
@@ -258,7 +258,7 @@ class ApiItemService extends Service {
         [Op.or]: [
           {
             needLogin: 1,
-            needCheck: 1,
+            needLoginCheck: 1,
           },
           {
             type: '1',
@@ -274,24 +274,28 @@ class ApiItemService extends Service {
     const { app, ctx } = this;
     const {
       commonConfig: {
-        apiItemsConf: { redisKey, disabled, needCheck, notNeedLogin },
+        apiItemsConf: { redisKey, disabled, needLoginCheck, notNeedLogin },
       },
     } = app.config;
     const result = await Promise.all([
       this.getApiItemsForCheck(disabled),
-      this.getApiItemsForCheck(needCheck),
+      this.getApiItemsForCheck(needLoginCheck),
       this.getApiItemsForCheck(notNeedLogin),
     ]);
     await ctx.service.redis.hmset(
       redisKey,
       'disabled',
       JSON.stringify(result[0]),
-      'needCheck',
+      'needLoginCheck',
       JSON.stringify(result[1]),
       'notNeedLogin',
       JSON.stringify(result[2])
     );
-    return result;
+    return {
+      disabled: result[0],
+      needLoginCheck: result[1],
+      notNeedLogin: result[2],
+    };
   }
 }
 
