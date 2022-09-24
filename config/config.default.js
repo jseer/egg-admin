@@ -22,11 +22,11 @@ module.exports = (appInfo) => {
 
   config.sequelize = {
     dialect: 'mysql',
-    host: '127.0.0.1',
+    host: process.env.MYSQL_HOST,
     port: 3306,
     database: 'admin',
     name: 'root',
-    password: '123456',
+    password: 'rootrootroot123456',
     define: {
       freezeTableName: false,
       underscored: true,
@@ -66,8 +66,6 @@ module.exports = (appInfo) => {
   };
 
   config.security = {
-    // TODO:
-    domainWhiteList: ['http://localhost:3000'],
     csrf: { enable: false },
   };
 
@@ -78,7 +76,7 @@ module.exports = (appInfo) => {
   config.redis = {
     client: {
       port: 6379, // Redis port
-      host: '127.0.0.1', // Redis host
+      host: process.env.REDIS_HOST,
       db: 0,
       password: '123456',
     },
