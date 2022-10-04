@@ -41,6 +41,11 @@ module.exports = function (app) {
         type: DataTypes.STRING(255),
         allowNull: true,
       },
+      createTime: {
+        type: DataTypes.STRING(255),
+        field: 'create_time',
+        allowNull: false,
+      },
     },
     {
       sequelize: app.model,

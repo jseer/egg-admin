@@ -55,5 +55,6 @@ module.exports = app => {
   router.get('/api/tourist/page', controller.tourist.page);
 
   router.get('/api/system/getLoginRecords', controller.system.getLoginRecords);
-
+  router.get('/api/system/continuousLoginDays', controller.system.continuousLoginDays);
+  router.get('/api/system/getCountMap', controller.system.getCountMap);
 };

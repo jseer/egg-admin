@@ -50,9 +50,17 @@ module.exports = (appInfo) => {
     },
     beforeCount(options) {
       if (this.options.custom_paranoid && options.paranoid !== false) {
-        options.where.delete_at = {
-          [Op.is]: null,
-        };
+        if (options.where) {
+          options.where.delete_at = {
+            [Op.is]: null,
+          };
+        } else {
+          options.where = {
+            delete_at: {
+              [Op.is]: null,
+            },
+          };
+        }
       }
     },
   };
