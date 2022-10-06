@@ -2,6 +2,8 @@
 
 'use strict';
 const sequelizeHooks = require('../app/utils/sequelizeHooks');
+const fs = require('fs');
+const path = require('path');
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
@@ -17,7 +19,7 @@ module.exports = (appInfo) => {
   config.middleware = ['checkLogin'];
 
   config.checkLogin = {
-    ignore: ['/api/user/login'],
+    ignore: ['/api/user/login', '/api/common/rsa/public'],
   };
 
   config.sequelize = {
@@ -76,5 +78,17 @@ module.exports = (appInfo) => {
       password: '123456',
     },
   };
+
+  config.rsaInfo = {
+    publicKey: fs.readFileSync(
+      path.resolve(__dirname, '../app/utils/rsa/rsa_1024_pub.pem'),
+      'utf-8'
+    ),
+    privateKey: fs.readFileSync(
+      path.resolve(__dirname, '../app/utils/rsa/rsa_1024_priv.pem'),
+      'utf-8'
+    ),
+  };
+
   return config;
 };

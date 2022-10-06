@@ -29,7 +29,7 @@ module.exports = function checkLogin() {
     const path = ctx.path;
     const method = ctx.method;
     if (filterApi(givenApiItems.disabled, path, method)) {
-      ctx.fail('管理员已禁用该功能', 403);
+      ctx.fail('管理员禁用了该功能', 403);
       return;
     }
 

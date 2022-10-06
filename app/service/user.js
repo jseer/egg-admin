@@ -1,6 +1,7 @@
 const Service = require('egg').Service;
 const { Op } = require('sequelize');
 const dayjs = require('dayjs');
+const NodeRSA = require('node-rsa');
 
 class UserService extends Service {
   async create(user) {
@@ -37,18 +38,24 @@ class UserService extends Service {
   }
 
   async login(user) {
-    const { ctx } = this;
+    const { ctx, app } = this;
+    const key = new NodeRSA(app.config.rsaInfo.privateKey, {
+      encryptionScheme: 'pkcs1',
+    });
+    const password = key.decrypt(user.password, 'utf8');
     const result = await ctx.model.User.findOne({
       where: {
         name: user.name,
-        password: user.password,
+        password,
       },
     });
-    await ctx.service.loginRecords.create({
-      name: result.name,
-      userId: result.id,
-      type: result.type,
-    });
+    if (result) {
+      await ctx.service.loginRecords.create({
+        name: result.name,
+        userId: result.id,
+        type: result.type,
+      });
+    }
     return result;
   }
 

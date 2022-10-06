@@ -18,6 +18,7 @@
     "ipip-ipdb": "^0.6.0",
     "lodash": "^4.17.21",
     "mysql2": "^2.3.3",
+    "node-rsa": "^1.1.1",
     "ua-parser-js": "^1.0.2"
   },
   "devDependencies": {
