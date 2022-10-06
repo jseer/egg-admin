@@ -1,6 +1,7 @@
 const Service = require('egg').Service;
 const { QueryTypes } = require('sequelize');
-
+const dayjs = require('dayjs');
+const parser = require('ua-parser-js');
 class LoginRecordsService extends Service {
   async continuousLoginDays(id) {
     const { ctx } = this;
@@ -53,6 +54,20 @@ class LoginRecordsService extends Service {
       }
     );
     return result;
+  }
+
+  async create(data) {
+    const { ctx } = this;
+    const ua = parser(ctx.headers['user-agent']);
+    const browser = ua.browser.name + '/' + ua.browser.version;
+    //TODO:
+    const ipInfo = ctx.helper.ip2Locate('58.248.12.198' || ctx.ip);
+    return ctx.model.LoginRecords.create({
+      ...ipInfo,
+      browser,
+      ...data,
+      loginTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    });
   }
 }
 

@@ -44,14 +44,10 @@ class UserService extends Service {
         password: user.password,
       },
     });
-    //TODO:
-    const info = ctx.helper.ip2Locate('58.248.12.198' || ctx.ip);
-    await ctx.model.LoginRecords.create({
+    await ctx.service.loginRecords.create({
       name: result.name,
       userId: result.id,
-      loginTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       type: result.type,
-      ...info,
     });
     return result;
   }

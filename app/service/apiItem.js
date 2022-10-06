@@ -3,12 +3,9 @@ const { Op, QueryTypes } = require('sequelize');
 
 class ApiItemService extends Service {
   async create(user) {
-    const { ctx } = this;
-    return ctx.model.transaction(async (t) => {
-      const data = await this.ctx.model.ApiItem.create(user, {
-        transaction: t,
-      });
-      await this.pullGivenApiItemsToRedis();
+    return this.ctx.model.transaction(async (t) => {
+      const data = await this.ctx.model.ApiItem.create(user);
+      await this.pullGivenApiItemsToRedis(t);
       return data;
     });
   }
@@ -16,7 +13,7 @@ class ApiItemService extends Service {
   async update(user) {
     const { ctx } = this;
     const { id, status, needLoginCheck, needLogin, ...data } = user;
-    return await ctx.model.transaction(async (t) => {
+    return ctx.model.transaction(async (t) => {
       const rows = await this.ctx.model.ApiItem.update(
         data,
         {
@@ -26,7 +23,7 @@ class ApiItemService extends Service {
         },
         { transaction: t }
       );
-      await this.pullGivenApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis(t);
       return rows;
     });
   }
@@ -113,7 +110,7 @@ class ApiItemService extends Service {
           message: `删除子项，${restList.map((l) => l.name).join(',')}才能删除`,
         };
       }
-      await this.pullGivenApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis(t);
     });
   }
 
@@ -146,7 +143,7 @@ class ApiItemService extends Service {
         },
         { transaction: t }
       );
-      await this.pullGivenApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis(t);
     });
   }
 
@@ -162,7 +159,7 @@ class ApiItemService extends Service {
         },
         { transaction: t }
       );
-      await this.pullGivenApiItemsToRedis();
+      await this.pullGivenApiItemsToRedis(t);
     });
   }
 
@@ -242,11 +239,12 @@ class ApiItemService extends Service {
     return rows;
   }
 
-  async getApiItemsForCheck(where) {
+  async getApiItemsForCheck(where, transaction) {
     const { ctx } = this;
     const rows = await ctx.model.ApiItem.findAll({
       attributes: ['path', 'method'],
       where,
+      transaction,
     });
     return rows;
   }
@@ -270,7 +268,7 @@ class ApiItemService extends Service {
     return rows;
   }
 
-  async pullGivenApiItemsToRedis() {
+  async pullGivenApiItemsToRedis(t) {
     const { app, ctx } = this;
     const {
       commonConfig: {
@@ -278,9 +276,9 @@ class ApiItemService extends Service {
       },
     } = app.config;
     const result = await Promise.all([
-      this.getApiItemsForCheck(disabled),
-      this.getApiItemsForCheck(needLoginCheck),
-      this.getApiItemsForCheck(notNeedLogin),
+      this.getApiItemsForCheck(disabled, t),
+      this.getApiItemsForCheck(needLoginCheck, t),
+      this.getApiItemsForCheck(notNeedLogin, t),
     ]);
     await ctx.service.redis.hmset(
       redisKey,

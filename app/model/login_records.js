@@ -20,7 +20,7 @@ module.exports = function (app) {
       },
       userId: {
         type: DataTypes.STRING(255),
-        allowNull: false,
+        allowNull: true,
         field: 'user_id',
       },
       ip: {
@@ -40,6 +40,10 @@ module.exports = function (app) {
         allowNull: true,
       },
       city: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      browser: {
         type: DataTypes.STRING(255),
         allowNull: true,
       },

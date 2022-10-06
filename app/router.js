@@ -17,6 +17,7 @@ module.exports = app => {
   router.get('/api/user/getListByRoleId', controller.user.getListByRoleId);
   router.get('/api/user/getLoginHistory', controller.user.getLoginHistory);
   router.get('/api/user/validateByNameOrEmail', controller.user.validateByNameOrEmail);
+  router.post('/api/user/touristLogin', controller.user.touristLogin);
 
   router.post('/api/role/create', controller.role.create);
   router.get('/api/role/page', controller.role.page);
@@ -50,9 +51,6 @@ module.exports = app => {
   router.post('/api/dictionaries/updateDictionariesItems', controller.dictionaries.updateDictionariesItem);
   router.get('/api/dictionaries/getDictionariesItemsById', controller.dictionaries.getDictionariesItemById);
   router.get('/api/dictionaries/getAllDictionaries', controller.dictionaries.getAllDictionaries);
-
-  router.post('/api/tourist/login', controller.tourist.login);
-  router.get('/api/tourist/page', controller.tourist.page);
 
   router.get('/api/system/getLoginRecords', controller.system.getLoginRecords);
   router.get('/api/system/continuousLoginDays', controller.system.continuousLoginDays);

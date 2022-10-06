@@ -1,7 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const { USER_TYPE } = require('../utils/common');
+const { USER_TYPE, TOURIST_INFO } = require('../utils/common');
 const dayjs = require('dayjs');
 
 class UserController extends Controller {
@@ -72,7 +72,7 @@ class UserController extends Controller {
     if (ctx.session.user.type === USER_TYPE.ACCOUNT) {
       userInfo = await ctx.service.user.findById(ctx.session.user.id);
     } else if (ctx.session.user.type === USER_TYPE.TOURIST) {
-      userInfo = await ctx.service.tourist.findById(ctx.session.user.id);
+      userInfo = TOURIST_INFO;
     }
     if (userInfo) {
       ctx.session.user = userInfo;
@@ -106,6 +106,15 @@ class UserController extends Controller {
   async validateByNameOrEmail() {
     const { ctx } = this;
     const result = await ctx.service.user.validateByNameOrEmail(ctx.query);
+    ctx.success(result);
+  }
+
+  async touristLogin() {
+    const { ctx, app } = this;
+    const result = await ctx.service.loginRecords.create(TOURIST_INFO);
+    ctx.session.user = TOURIST_INFO;
+    const { commonConfig: { defaultLoginMaxAge } } = app.config;
+    ctx.session.maxAge = defaultLoginMaxAge;
     ctx.success(result);
   }
 }

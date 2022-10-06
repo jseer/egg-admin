@@ -43,8 +43,10 @@ class SystemController extends Controller {
         ctx.model.User.count({
           where: ctx.model.literal(where),
         }),
-        ctx.model.Tourist.count({
-          where: ctx.model.literal(where),
+        ctx.model.LoginRecords.count({
+          where: ctx.model.literal(`
+            ${loginRecordsWhere} AND type = 'tourist'
+          `),
         }),
         ctx.model.LoginRecords.count({
           where: ctx.model.literal(`
