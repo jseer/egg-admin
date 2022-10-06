@@ -25,10 +25,10 @@ module.exports = (appInfo) => {
   config.sequelize = {
     dialect: 'mysql',
     host: process.env.MYSQL_HOST,
-    port: 3306,
+    port: process.env.MYSQL_PORT,
     database: 'admin',
-    name: 'root',
-    password: 'rootrootroot123456',
+    username: 'admin_egg-admin',
+    password: process.env.MYSQL_ADMIN_PASSWORD,
     define: {
       freezeTableName: false,
       underscored: true,
@@ -72,10 +72,10 @@ module.exports = (appInfo) => {
 
   config.redis = {
     client: {
-      port: 6379, // Redis port
+      port: process.env.REDIS_PORT, // Redis port
       host: process.env.REDIS_HOST,
       db: 0,
-      password: '123456',
+      password: process.env.REDIS_PASSWORD,
     },
   };
 

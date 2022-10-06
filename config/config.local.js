@@ -13,7 +13,9 @@ module.exports = (appInfo) => {
   const config = (exports = {});
 
   config.sequelize = {
-    host: '127.0.0.1'
+    host: '127.0.0.1',
+    username: 'dev',
+    password: '123456',
   };
 
   config.security = {
@@ -23,6 +25,8 @@ module.exports = (appInfo) => {
   config.redis = {
     client: {
       host: '127.0.0.1',
+      port: 6380, // Redis port
+      password: '123456',
     },
   };
   return config;
