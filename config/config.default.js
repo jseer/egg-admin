@@ -79,6 +79,10 @@ module.exports = (appInfo) => {
     },
   };
 
+  config.logger = {
+    disableConsoleAfterReady: false,
+  };
+
   config.rsaInfo = {
     publicKey: fs.readFileSync(
       path.resolve(__dirname, '../app/utils/rsa/rsa_1024_pub.pem'),
