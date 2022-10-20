@@ -26,7 +26,7 @@ module.exports = (appInfo) => {
     dialect: 'mysql',
     host: process.env.MYSQL_HOST,
     port: process.env.MYSQL_PORT,
-    database: 'admin',
+    database: 'egg_admin',
     username: 'admin_egg-admin',
     password: process.env.MYSQL_ADMIN_PASSWORD,
     define: {
