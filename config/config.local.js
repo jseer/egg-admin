@@ -1,7 +1,6 @@
 /* eslint valid-jsdoc: "off" */
 
 'use strict';
-const sequelizeHooks = require('../app/utils/sequelizeHooks');
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
@@ -25,7 +24,7 @@ module.exports = (appInfo) => {
   config.redis = {
     client: {
       host: '127.0.0.1',
-      port: 6380, // Redis port
+      port: 6379, // Redis port
       password: '123456',
     },
   };

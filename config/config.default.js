@@ -16,7 +16,12 @@ module.exports = (appInfo) => {
 
   config.keys = appInfo.name + '_zj-egg-admin';
 
-  config.middleware = ['checkLogin'];
+  config.middleware = ['checkSuperUser', 'checkLogin'];
+
+  // 超级管理员入口
+  config.checkSuperUser = {
+    match: ['/api/user/login', '/api/user/getCurrent', '/api/user/logout'],
+  };
 
   config.checkLogin = {
     ignore: ['/api/user/login', '/api/common/rsa/public'],
@@ -37,7 +42,7 @@ module.exports = (appInfo) => {
   };
 
   config.commonConfig = {
-    superAdmin: 'root',
+    superAdmin: 'root@123456789',
     touristRoles: ['tourist'],
     accountRoles: ['normal_user'],
     apiItemsConf: {

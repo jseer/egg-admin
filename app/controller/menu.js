@@ -58,6 +58,7 @@ class MenuController extends Controller {
     let menuList = [];
     if (user.type === USER_TYPE.ACCOUNT) {
       if (user.name === superAdmin) {
+        // 超级管理员取全部
         menuList = await ctx.service.menu.list({});
       } else {
         menuList = await ctx.service.menu.authListByAccountUserId(user.id);

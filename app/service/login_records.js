@@ -60,8 +60,7 @@ class LoginRecordsService extends Service {
     const { ctx } = this;
     const ua = parser(ctx.headers['user-agent']);
     const browser = ua.browser.name + '/' + ua.browser.version;
-    //TODO:
-    const ipInfo = ctx.helper.ip2Locate('58.248.12.198' || ctx.ip);
+    const ipInfo = ctx.helper.ip2Locate(ctx.ip);
     return ctx.model.LoginRecords.create({
       ...ipInfo,
       browser,

@@ -3,6 +3,7 @@
 const Controller = require('egg').Controller;
 const { USER_TYPE, TOURIST_INFO } = require('../utils/common');
 const dayjs = require('dayjs');
+const NodeRSA = require('node-rsa');
 
 class UserController extends Controller {
   async create() {
@@ -12,14 +13,23 @@ class UserController extends Controller {
   }
 
   async register() {
-    const { ctx } = this;
-    const data = await ctx.service.user.register(ctx.request.body);
+    const { ctx, app } = this;
+    const body = ctx.request.body;
+    const key = new NodeRSA(app.config.rsaInfo.privateKey, {
+      encryptionScheme: 'pkcs1',
+    });
+    body.password = key.decrypt(body.password, 'utf8');
+    const data = await ctx.service.user.register(body);
     ctx.success(data);
   }
 
   async login() {
     const { ctx, app } = this;
     const body = ctx.request.body;
+    const key = new NodeRSA(app.config.rsaInfo.privateKey, {
+      encryptionScheme: 'pkcs1',
+    });
+    body.password = key.decrypt(body.password, 'utf8');
     const data = await ctx.service.user.login(body);
     if (data) {
       ctx.session.user = data;
