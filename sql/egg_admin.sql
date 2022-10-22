@@ -11,7 +11,7 @@
  Target Server Version : 80030
  File Encoding         : 65001
 
- Date: 21/10/2022 18:20:26
+ Date: 22/10/2022 08:13:17
 */
 
 SET NAMES utf8mb4;
@@ -48,7 +48,6 @@ CREATE TABLE `api_items` (
 BEGIN;
 INSERT INTO `api_items` VALUES (15, '用户模块', '/api/user', NULL, NULL, '1', '2022-09-17 11:21:04', '2022-10-21 18:16:00', 1, '', 1, 0);
 INSERT INTO `api_items` VALUES (16, '创建用户', '/api/user/create', '/api/user/create', 15, '2', '2022-09-17 11:22:57', '2022-09-24 21:21:33', 1, 'post', 1, 1);
-INSERT INTO `api_items` VALUES (17, '登录', '/api/user/login', '/api/user/login', 15, '2', '2022-09-17 11:23:10', '2022-09-24 21:21:33', 0, 'post', 1, 0);
 INSERT INTO `api_items` VALUES (18, '用户分页列表', '/api/user/page', '/api/user/page', 15, '2', '2022-09-17 11:23:32', '2022-09-24 21:21:33', 1, 'get', 1, 1);
 INSERT INTO `api_items` VALUES (19, '用户列表', '/api/user/list', '/api/user/list', 15, '2', '2022-09-17 11:24:00', '2022-09-24 21:21:33', 1, 'get', 1, 1);
 INSERT INTO `api_items` VALUES (20, '更新用户', '/api/user/update', '/api/user/update', 15, '2', '2022-09-17 11:24:41', '2022-09-24 21:21:33', 1, 'post', 1, 1);
@@ -93,7 +92,7 @@ INSERT INTO `api_items` VALUES (70, '更新api接口校验状态', '/api/apiItem
 INSERT INTO `api_items` VALUES (71, '系统监控', '/system', NULL, NULL, '1', '2022-09-22 20:45:58', '2022-09-22 20:45:58', 1, NULL, 1, 0);
 INSERT INTO `api_items` VALUES (72, '查询登录记录', '/api/system/getLoginRecords', '/api/system/getLoginRecords', 71, '2', '2022-09-22 20:51:03', '2022-09-22 20:51:03', 1, 'get', 1, 1);
 INSERT INTO `api_items` VALUES (73, '登录历史', '/api/user/getLoginHistory', '/api/user/getLoginHistory', 15, '2', '2022-09-22 21:16:29', '2022-09-24 21:21:33', 1, 'get', 1, 1);
-INSERT INTO `api_items` VALUES (75, '根据账号或邮箱验证用户是否存在', '/api/user/validateByNameOrEmail', '/api/user/validateByNameOrEmail', 15, '2', '2022-09-23 09:33:07', '2022-09-24 21:21:33', 0, 'get', 1, 0);
+INSERT INTO `api_items` VALUES (75, '根据账号或邮箱验证用户是否存在', '/api/user/validateByNameOrEmail', '/api/user/validateByNameOrEmail', 15, '2', '2022-09-23 09:33:07', '2022-10-22 08:05:50', 0, 'get', 1, 0);
 INSERT INTO `api_items` VALUES (76, '连续登录天数', '/api/system/continuousLoginDays', '/api/system/continuousLoginDays', 71, '2', '2022-10-04 13:08:32', '2022-10-04 13:08:32', 1, 'get', 1, 1);
 INSERT INTO `api_items` VALUES (77, '用户相关数据汇总', '/api/system/getCountMap', '/api/system/getCountMap', 71, '2', '2022-10-04 13:09:17', '2022-10-04 13:18:57', 1, 'get', 1, 1);
 INSERT INTO `api_items` VALUES (81, '游客登录', '/api/user/touristLogin', '/api/user/touristLogin', 15, '2', '2022-10-06 08:54:20', '2022-10-06 08:54:20', 0, 'post', 1, 0);
