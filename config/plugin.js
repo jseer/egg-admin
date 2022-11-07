@@ -1,4 +1,5 @@
 'use strict';
+const path = require('path');
 
 /** @type Egg.EggPlugin */
 module.exports = {
@@ -21,5 +22,9 @@ module.exports = {
   sessionRedis: {
     enable: true,
     package: 'egg-session-redis',
+  },
+  rabbitmq: {
+    enable: true,
+    path: path.join(__dirname, '../plugins/rabbitmq'),
   },
 };

@@ -55,6 +55,7 @@ module.exports = app => {
   router.get('/api/system/getLoginRecords', controller.system.getLoginRecords);
   router.get('/api/system/continuousLoginDays', controller.system.continuousLoginDays);
   router.get('/api/system/getCountMap', controller.system.getCountMap);
+  router.post('/api/system/initData', controller.system.initData);
 
   router.get('/api/common/rsa/public', controller.common.getRsaPublicKey);
 };

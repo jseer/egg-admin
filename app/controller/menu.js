@@ -51,18 +51,13 @@ class MenuController extends Controller {
     const { ctx, app } = this;
     const {
       config: {
-        commonConfig: { superAdmin, touristRoles },
+        commonConfig: { touristRoles },
       },
     } = app;
     const user = ctx.session.user;
     let menuList = [];
     if (user.type === USER_TYPE.ACCOUNT) {
-      if (user.name === superAdmin) {
-        // 超级管理员取全部
-        menuList = await ctx.service.menu.list({});
-      } else {
-        menuList = await ctx.service.menu.authListByAccountUserId(user.id);
-      }
+      menuList = await ctx.service.menu.authListByAccountUserId(user.id);
     } else if (user.type === USER_TYPE.TOURIST) {
       menuList = await ctx.service.menu.authListByTouristRoles(touristRoles);
     }

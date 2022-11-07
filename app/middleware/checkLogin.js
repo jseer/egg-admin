@@ -14,13 +14,10 @@ module.exports = function checkLogin() {
     ctx.session.user
     */
     const {
-      commonConfig: { superAdmin, apiItemsConf },
+      commonConfig: { apiItemsConf },
     } = ctx.app.config;
 
     const user = ctx.session.user;
-    if (user?.name === superAdmin) {
-      return next();
-    }
 
     let givenApiItems = await ctx.service.redis.hgetall(apiItemsConf.redisKey);
     if (!givenApiItems.disabled) {

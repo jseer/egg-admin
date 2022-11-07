@@ -1,0 +1,4 @@
+exports.rabbitmq = {
+  username: '',
+  password: '',
+};

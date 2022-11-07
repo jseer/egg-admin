@@ -28,5 +28,11 @@ module.exports = (appInfo) => {
       password: '123456',
     },
   };
+
+  config.rabbitmq = {
+    username: 'dev',
+    password: '123456',
+  };
+
   return config;
 };

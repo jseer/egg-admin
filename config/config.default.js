@@ -16,15 +16,10 @@ module.exports = (appInfo) => {
 
   config.keys = appInfo.name + '_zj-egg-admin';
 
-  config.middleware = ['checkSuperUser', 'checkLogin'];
-
-  // 超级管理员入口
-  config.checkSuperUser = {
-    match: ['/api/user/login', '/api/user/getCurrent', '/api/user/logout'],
-  };
+  config.middleware = ['checkLogin'];
 
   config.checkLogin = {
-    ignore: ['/api/user/login', '/api/common/rsa/public'],
+    ignore: ['/api/user/login', '/api/common/rsa/public', '/api/system/initData'],
   };
 
   config.sequelize = {
@@ -39,10 +34,12 @@ module.exports = (appInfo) => {
       underscored: true,
       hooks: sequelizeHooks(appInfo),
     },
+    dialectOptions: {
+      multipleStatements: true,
+    },
   };
 
   config.commonConfig = {
-    superAdmin: 'root@123456789',
     touristRoles: ['tourist'],
     accountRoles: ['normal_user'],
     apiItemsConf: {
@@ -82,6 +79,11 @@ module.exports = (appInfo) => {
       db: 0,
       password: process.env.REDIS_PASSWORD,
     },
+  };
+
+  config.rabbitmq = {
+    username: process.env.RABBITMQ_USERNAME,
+    password: process.env.RABBITMQ_PASSWORD,
   };
 
   config.logger = {

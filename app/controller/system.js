@@ -18,6 +18,16 @@ class SystemController extends Controller {
     ctx.success(result[0]?.count);
   }
 
+  async initData() {
+    const { ctx } = this;
+    try {
+      await ctx.service.system.initData();
+      ctx.success(true);
+    } catch (e) {
+      ctx.fail(e.message);
+    }
+  }
+
   async getCountMap() {
     const { ctx } = this;
     const type = ctx.query.type;

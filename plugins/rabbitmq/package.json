@@ -1,0 +1,22 @@
+{
+  "name": "egg-rabbitmq",
+  "version": "1.0.0",
+  "description": "egg plugin rabbitmq",
+  "eggPlugin": {
+    "name": "rabbitmq"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "egg",
+    "rabbitmq",
+    "egg-plugin",
+    "eggPlugin"
+  ],
+  "author": "",
+  "license": "ISC"
+}

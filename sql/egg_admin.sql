@@ -18,7 +18,8 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 创建数据库
-CREATE DATABASE if NOT EXISTS `egg_admin`;
+DROP DATABASE IF EXISTS `egg_admin`;
+CREATE DATABASE `egg_admin`;
 use egg_admin;
 
 -- ----------------------------
