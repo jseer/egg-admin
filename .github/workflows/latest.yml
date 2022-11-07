@@ -1,0 +1,23 @@
+name: latest
+
+env:
+    DOCKER_IMAGE: ${{secrets.REGISTRY_URL}}/${{secrets.NAMESPACE}}/egg-admin:latest
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: | 
+        docker build . --file Dockerfile --tag ${{env.DOCKER_IMAGE}}
+        docker login --username=${{secrets.REGISTRY_USERNAME}} --password=${{secrets.REGISTRY_PASSWORD}} ${{secrets.REGISTRY_URL}}
+        docker push ${{env.DOCKER_IMAGE}}
