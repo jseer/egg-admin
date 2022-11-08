@@ -27,8 +27,8 @@ module.exports = (appInfo) => {
     host: process.env.MYSQL_HOST,
     port: process.env.MYSQL_PORT,
     database: 'egg_admin',
-    username: 'egg_admin',
-    password: process.env.MYSQL_ADMIN_PASSWORD,
+    username: process.env.MYSQL_USERNAME,
+    password: process.env.MYSQL_PASSWORD,
     define: {
       freezeTableName: false,
       underscored: true,
@@ -84,6 +84,8 @@ module.exports = (appInfo) => {
   config.rabbitmq = {
     username: process.env.RABBITMQ_USERNAME,
     password: process.env.RABBITMQ_PASSWORD,
+    host: process.env.RABBITMQ_HOSTNAME,
+    vhost: process.env.RABBITMQ_VHOST,
   };
 
   config.logger = {
