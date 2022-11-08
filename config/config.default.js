@@ -27,7 +27,7 @@ module.exports = (appInfo) => {
     host: process.env.MYSQL_HOST,
     port: process.env.MYSQL_PORT,
     database: 'egg_admin',
-    username: 'admin_egg-admin',
+    username: 'egg_admin',
     password: process.env.MYSQL_ADMIN_PASSWORD,
     define: {
       freezeTableName: false,
