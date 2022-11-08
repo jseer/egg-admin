@@ -22,6 +22,9 @@ module.exports = (appInfo) => {
     ignore: ['/api/user/login', '/api/common/rsa/public', '/api/system/initData'],
   };
 
+  config.proxy = true;
+  config.hostHeaders = 'x-forwarded-host';
+
   config.sequelize = {
     dialect: 'mysql',
     host: process.env.MYSQL_HOST,
@@ -84,7 +87,7 @@ module.exports = (appInfo) => {
   config.rabbitmq = {
     username: process.env.RABBITMQ_USERNAME,
     password: process.env.RABBITMQ_PASSWORD,
-    host: process.env.RABBITMQ_HOSTNAME,
+    hostname: process.env.RABBITMQ_HOSTNAME,
     vhost: process.env.RABBITMQ_VHOST,
   };
 

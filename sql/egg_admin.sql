@@ -90,7 +90,7 @@ INSERT INTO `api_items` VALUES (67, '更新菜单状态', '/api/menu/updateStatu
 INSERT INTO `api_items` VALUES (68, '获取可分配的api接口列表', '/api/apiItem/getDistributableList', '/api/apiItem/getDistributableList', 38, '2', '2022-09-22 18:07:39', '2022-09-22 18:07:39', 1, 'get', 1, 1);
 INSERT INTO `api_items` VALUES (69, '更新api接口状态', '/api/apiItem/updateStatus', '/api/apiItem/updateStatus', 38, '2', '2022-09-22 18:07:59', '2022-09-22 18:08:08', 1, 'post', 1, 1);
 INSERT INTO `api_items` VALUES (70, '更新api接口校验状态', '/api/apiItem/updateCheckStatus', '/api/apiItem/updateCheckStatus', 38, '2', '2022-09-22 18:37:44', '2022-09-22 18:37:44', 1, 'post', 1, 1);
-INSERT INTO `api_items` VALUES (71, '系统监控', '/system', NULL, NULL, '1', '2022-09-22 20:45:58', '2022-09-22 20:45:58', 1, NULL, 1, 0);
+INSERT INTO `api_items` VALUES (71, '系统管理', '/system', NULL, NULL, '1', '2022-09-22 20:45:58', '2022-09-22 20:45:58', 1, NULL, 1, 0);
 INSERT INTO `api_items` VALUES (72, '查询登录记录', '/api/system/getLoginRecords', '/api/system/getLoginRecords', 71, '2', '2022-09-22 20:51:03', '2022-09-22 20:51:03', 1, 'get', 1, 1);
 INSERT INTO `api_items` VALUES (73, '登录历史', '/api/user/getLoginHistory', '/api/user/getLoginHistory', 15, '2', '2022-09-22 21:16:29', '2022-09-24 21:21:33', 1, 'get', 1, 1);
 INSERT INTO `api_items` VALUES (75, '根据账号或邮箱验证用户是否存在', '/api/user/validateByNameOrEmail', '/api/user/validateByNameOrEmail', 15, '2', '2022-09-23 09:33:07', '2022-10-22 08:05:50', 0, 'get', 1, 0);
@@ -215,7 +215,7 @@ INSERT INTO `menu` VALUES (9, '首页', '/overview', '/overview', NULL, '2', 2, 
 INSERT INTO `menu` VALUES (11, '资源列表', '/authManage/resource', NULL, 2, '1', 1, '2022-09-17 09:22:50', '2022-09-22 17:45:56', 1);
 INSERT INTO `menu` VALUES (12, '菜单', '/authManage/resource/menu', '/authManage/resource/menu', 11, '2', 1, '2022-09-17 09:26:28', '2022-09-22 17:45:56', 1);
 INSERT INTO `menu` VALUES (15, 'api接口', '/authManage/resource/apiItem', '/authManage/resource/apiItem', 11, '2', 0, '2022-09-17 11:07:34', '2022-09-22 17:53:46', 1);
-INSERT INTO `menu` VALUES (24, '系统监控', '/system', NULL, NULL, '1', 1, '2022-09-22 20:36:16', '2022-09-22 20:37:42', 1);
+INSERT INTO `menu` VALUES (24, '系统管理', '/system', NULL, NULL, '1', 1, '2022-09-22 20:36:16', '2022-09-22 20:37:42', 1);
 INSERT INTO `menu` VALUES (25, '登录记录', '/system/loginRecords', '/system/loginRecords', 24, '2', 1, '2022-09-22 20:37:58', '2022-09-22 20:37:58', 1);
 INSERT INTO `menu` VALUES (26, '登录历史', 'loginHistory', '/loginHistory', NULL, '2', 1, '2022-09-22 21:14:21', '2022-09-22 21:14:29', 1);
 COMMIT;
