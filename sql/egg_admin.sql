@@ -1,19 +1,3 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : localhost
- Source Server Type    : MySQL
- Source Server Version : 80030
- Source Host           : localhost:3306
- Source Schema         : egg_admin
-
- Target Server Type    : MySQL
- Target Server Version : 80030
- File Encoding         : 65001
-
- Date: 22/10/2022 08:13:17
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -256,7 +240,7 @@ CREATE TABLE `role_api_item` (
   `create_time` varchar(255) NOT NULL,
   `update_time` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Records of role_api_item
@@ -343,6 +327,8 @@ INSERT INTO `role_api_item` VALUES (78, 3, 38, '2022-10-21 18:05:58', '2022-10-2
 INSERT INTO `role_api_item` VALUES (79, 3, 41, '2022-10-21 18:05:58', '2022-10-21 18:05:58');
 INSERT INTO `role_api_item` VALUES (80, 3, 43, '2022-10-21 18:05:58', '2022-10-21 18:05:58');
 INSERT INTO `role_api_item` VALUES (81, 3, 45, '2022-10-21 18:05:58', '2022-10-21 18:05:58');
+INSERT INTO `role_api_item` VALUES (82, 3, 50, '2022-11-08 20:09:37', '2022-11-08 20:09:37');
+INSERT INTO `role_api_item` VALUES (83, 3, 66, '2022-11-08 20:09:37', '2022-11-08 20:09:37');
 COMMIT;
 
 -- ----------------------------
